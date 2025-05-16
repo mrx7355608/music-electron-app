@@ -21,9 +21,12 @@
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
-    "@electron-toolkit/preload": "^3.0.1",
-    "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.3.9"
+    "@electron-toolkit/preload": "^2.0.0",
+    "@electron-toolkit/utils": "^2.0.0",
+    "@tailwindcss/vite": "^4.1.7",
+    "electron-updater": "^6.1.1",
+    "react-router-dom": "^6.22.3",
+    "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",

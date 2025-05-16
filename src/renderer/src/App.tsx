@@ -1,4 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Artists from './pages/Artists'
@@ -7,23 +10,83 @@ import Bundles from './pages/Bundles'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
 
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex bg-slate-50">
+    <Sidebar />
+    <main className="flex-1 ml-64">{children}</main>
+  </div>
+)
+
 const App: React.FC = () => {
   return (
-    <Router>
-      <div className="flex bg-slate-50">
-        <Sidebar />
-        <main className="flex-1 ml-64">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/artists" element={<Artists />} />
-            <Route path="/playlists" element={<Playlists />} />
-            <Route path="/bundles" element={<Bundles />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artists"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Artists />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/playlists"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Playlists />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bundles"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Bundles />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Users />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Settings />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 

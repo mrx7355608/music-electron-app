@@ -20,7 +20,7 @@ const Users: React.FC = () => {
   const fetchUsers = async (): Promise<void> => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('users_profile')
         .select('*')
         .order('created_at', { ascending: false })
 
@@ -40,7 +40,7 @@ const Users: React.FC = () => {
     try {
       // First create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password
       })
 
@@ -67,6 +67,7 @@ const Users: React.FC = () => {
       })
       fetchUsers()
     } catch (err) {
+      console.log(err)
       setError(err instanceof Error ? err.message : 'Failed to create user')
     }
   }

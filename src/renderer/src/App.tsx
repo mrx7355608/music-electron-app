@@ -4,12 +4,13 @@ import Dashboard from './pages/Dashboard'
 import Artists from './pages/Artists'
 import Playlists from './pages/Playlists'
 import Bundles from './pages/Bundles'
+import Users from './pages/Users'
 import Settings from './pages/Settings'
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="flex bg-gray-100 min-h-screen">
+      <div className="flex bg-slate-50">
         <Sidebar />
         <main className="flex-1 ml-64">
           <Routes>
@@ -17,6 +18,7 @@ const App: React.FC = () => {
             <Route path="/artists" element={<Artists />} />
             <Route path="/playlists" element={<Playlists />} />
             <Route path="/bundles" element={<Bundles />} />
+            <Route path="/users" element={<Users />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>

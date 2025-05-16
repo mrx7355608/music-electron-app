@@ -5,12 +5,13 @@ import { DbUser } from '../lib/types'
 const Users: React.FC = () => {
   const [users, setUsers] = useState<DbUser[]>([])
   const [loading, setLoading] = useState(true)
+  const [isAdding, setIsAdding] = useState(false)
+
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    role: 'viewer' as const
+    password: ''
   })
 
   useEffect(() => {
@@ -36,39 +37,49 @@ const Users: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     setError(null)
+    setIsAdding(true)
 
     try {
-      // First create the auth user
+      // Fetch existing user session
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw sessionError
+
+      // Then create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email.trim(),
+        email: formData.email,
         password: formData.password
       })
 
       if (authError) throw authError
 
-      // Then create the user profile
+      // Then set the old sessions back
+      await supabase.auth.setSession(sessionData.session!)
+
+      // Lastly, create the user profile
       const { error: profileError } = await supabase.from('users_profile').insert([
         {
           id: authData.user?.id,
           name: formData.name,
-          email: formData.email,
-          role: formData.role
+          email: formData.email
         }
       ])
 
       if (profileError) throw profileError
 
-      // Reset form and refresh users list
+      // Reset form
       setFormData({
         name: '',
         email: '',
-        password: '',
-        role: 'viewer' as const
+        password: ''
       })
+
+      // Refresh users list
       fetchUsers()
     } catch (err) {
       console.log(err)
       setError(err instanceof Error ? err.message : 'Failed to create user')
+    } finally {
+      setIsAdding(false)
     }
   }
 
@@ -79,6 +90,7 @@ const Users: React.FC = () => {
       if (error) throw error
       fetchUsers()
     } catch (err) {
+      console.log(err)
       setError(err instanceof Error ? err.message : 'Failed to delete user')
     }
   }
@@ -135,26 +147,12 @@ const Users: React.FC = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              >
-                <option value="viewer">Viewer</option>
-                <option value="editor">Editor</option>
-              </select>
-            </div>
-
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              disabled={loading}
+              disabled={isAdding}
             >
-              {loading ? 'Adding...' : 'Add User'}
+              {isAdding ? 'Adding...' : 'Add User'}
             </button>
           </form>
         </div>
@@ -176,7 +174,6 @@ const Users: React.FC = () => {
                   <div>
                     <h3 className="font-semibold">{user.name}</h3>
                     <p className="text-sm text-gray-600">{user.email}</p>
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">{user.role}</span>
                   </div>
                   <button
                     onClick={() => handleDelete(user.id)}

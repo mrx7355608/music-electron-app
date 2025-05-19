@@ -17,3 +17,16 @@ export interface ReleaseFormData {
   status: 'online' | 'planned'
   created_at: string
 }
+
+export interface Release {
+  id: string
+  artist_name: string
+  label: string
+  distributor: string
+  title: string
+  created_at: string
+  genre: string
+  bundle: string | null
+  original_producer: string
+  status: 'online' | 'planned'
+}

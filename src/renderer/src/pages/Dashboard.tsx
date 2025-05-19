@@ -1,127 +1,373 @@
-import React from 'react'
-import { Users, Music, PlayCircle, Clock, BarChart2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+import { Search, Filter, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { Release } from '../lib/types'
 
-const StatCard = ({
-  icon: Icon,
-  label,
-  value,
-  trend
-}: {
-  icon: React.ElementType
-  label: string
-  value: string
-  trend: string
-}) => (
-  <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-50 rounded-lg">
-          <Icon className="w-6 h-6 text-blue-600" />
-        </div>
-        <div>
-          <p className="text-sm font-medium text-slate-600">{label}</p>
-          <p className="text-2xl font-semibold text-slate-900">{value}</p>
-        </div>
-      </div>
-      <div className="text-sm font-medium text-green-600">{trend}</div>
-    </div>
-  </div>
-)
+const ITEMS_PER_PAGE = 10
 
-const Chart = () => (
-  <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-    <div className="flex items-center justify-between mb-4">
-      <h3 className="text-lg font-semibold text-slate-900">Listening Activity</h3>
-      <select className="text-sm border rounded-lg px-3 py-2">
-        <option>Last 7 days</option>
-        <option>Last 30 days</option>
-        <option>Last 90 days</option>
-      </select>
-    </div>
-    <div className="h-64 flex items-center justify-center border-t">
-      <BarChart2 className="w-12 h-12 text-slate-300" />
-    </div>
-  </div>
-)
+const Dashboard = () => {
+  const [releases, setReleases] = useState<Release[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [filters, setFilters] = useState({
+    artist_name: '',
+    label: '',
+    title: '',
+    date: '',
+    month: '',
+    year: '',
+    genre: '',
+    bundle: '',
+    status: '',
+    recently_added: false,
+    new_artist: false
+  })
+  const [showFilters, setShowFilters] = useState(false)
 
-const TopItems = ({
-  title,
-  items
-}: {
-  title: string
-  items: { name: string; value: string }[]
-}) => (
-  <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
-    <h3 className="text-lg font-semibold text-slate-900 mb-4">{title}</h3>
-    <div className="space-y-4">
-      {items.map((item, i) => (
-        <div key={i} className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center font-medium text-slate-600">
-              {i + 1}
-            </div>
-            <span className="font-medium text-slate-900">{item.name}</span>
-          </div>
-          <span className="text-sm text-slate-600">{item.value}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-)
+  const fetchReleases = async () => {
+    setLoading(true)
+    try {
+      let query = supabase.from('releases').select('*', { count: 'exact' })
 
-const Dashboard: React.FC = () => {
-  const stats = [
-    { icon: Users, label: 'Total Users', value: '1,234', trend: '+12.5%' },
-    { icon: Music, label: 'Total Artists', value: '567', trend: '+8.2%' },
-    { icon: PlayCircle, label: 'Total Plays', value: '89.3k', trend: '+23.1%' },
-    { icon: Clock, label: 'Avg. Session', value: '24m', trend: '+5.4%' }
-  ]
+      // Apply search
+      if (searchTerm) {
+        query = query.or(
+          `artist_name.ilike.%${searchTerm}%,label.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
+        )
+      }
 
-  const topArtists = [
-    { name: 'The Weekend', value: '2.3M plays' },
-    { name: 'Drake', value: '1.8M plays' },
-    { name: 'Taylor Swift', value: '1.5M plays' },
-    { name: 'Ed Sheeran', value: '1.2M plays' }
-  ]
+      // Apply filters
+      if (filters.artist_name) {
+        query = query.eq('artist_name', filters.artist_name)
+      }
+      if (filters.label) {
+        query = query.eq('label', filters.label)
+      }
+      if (filters.title) {
+        query = query.eq('title', filters.title)
+      }
+      if (filters.date) {
+        query = query.eq('created_at', filters.date)
+      }
+      if (filters.month) {
+        query = query.filter('created_at', 'ilike', `%-${filters.month}-%`)
+      }
+      if (filters.year) {
+        query = query.filter('created_at', 'ilike', `${filters.year}-%`)
+      }
+      if (filters.genre) {
+        query = query.eq('genre', filters.genre)
+      }
+      if (filters.bundle) {
+        query = query.eq('bundle', filters.bundle)
+      }
+      if (filters.status) {
+        query = query.eq('status', filters.status)
+      }
+      if (filters.recently_added) {
+        query = query.order('created_at', { ascending: false })
+      }
+      if (filters.new_artist) {
+        // This would need a more complex query to identify new artists
+        // For now, we'll just order by artist_name
+        query = query.order('artist_name', { ascending: true })
+      }
 
-  const topPlaylists = [
-    { name: 'Workout Mix', value: '45k followers' },
-    { name: 'Chill Vibes', value: '32k followers' },
-    { name: 'Party Hits', value: '28k followers' },
-    { name: 'Focus Flow', value: '25k followers' }
-  ]
+      // Add pagination
+      const from = (currentPage - 1) * ITEMS_PER_PAGE
+      const to = from + ITEMS_PER_PAGE - 1
+      query = query.range(from, to)
+
+      const { data, error, count } = await query
+
+      if (error) throw error
+
+      setReleases(data || [])
+      setTotalCount(count || 0)
+    } catch (error) {
+      console.error('Error fetching releases:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchReleases()
+  }, [currentPage, searchTerm, filters])
+
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+
+  const handleFilterChange = (key: string, value: string | boolean) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    setCurrentPage(1) // Reset to first page when filters change
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value)
+    setCurrentPage(1) // Reset to first page when search changes
+  }
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
-            <p className="text-slate-600">Welcome back, Admin</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="px-4 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg border shadow-sm hover:bg-slate-50">
-              Download Report
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700">
-              View Analytics
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
+            Releases Dashboard
+          </h1>
+          <div className="flex gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search releases..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10 pr-4 py-2 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 w-64"
+              />
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white hover:bg-slate-800/70 transition-all duration-200 flex items-center gap-2"
+            >
+              <Filter className="w-5 h-5 text-purple-400" />
+              Filters
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, i) => (
-            <StatCard key={i} {...stat} />
-          ))}
-        </div>
+        {showFilters && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-4 rounded-xl bg-slate-800/30 border border-purple-500/20">
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Artist Name</label>
+              <input
+                type="text"
+                value={filters.artist_name}
+                onChange={(e) => handleFilterChange('artist_name', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Label</label>
+              <input
+                type="text"
+                value={filters.label}
+                onChange={(e) => handleFilterChange('label', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">
+                Release Title
+              </label>
+              <input
+                type="text"
+                value={filters.title}
+                onChange={(e) => handleFilterChange('title', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Date</label>
+              <input
+                type="date"
+                value={filters.date}
+                onChange={(e) => handleFilterChange('date', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Month</label>
+              <select
+                value={filters.month}
+                onChange={(e) => handleFilterChange('month', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              >
+                <option value="">Select Month</option>
+                {Array.from({ length: 12 }, (_, i) => {
+                  const month = (i + 1).toString().padStart(2, '0')
+                  return (
+                    <option key={month} value={month}>
+                      {new Date(2000, i).toLocaleString('default', { month: 'long' })}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Year</label>
+              <select
+                value={filters.year}
+                onChange={(e) => handleFilterChange('year', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              >
+                <option value="">Select Year</option>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const year = new Date().getFullYear() - i
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Genre</label>
+              <select
+                value={filters.genre}
+                onChange={(e) => handleFilterChange('genre', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              >
+                <option value="">Select Genre</option>
+                <option value="Pop">Pop</option>
+                <option value="K-Pop">K-Pop</option>
+                <option value="Rap">Rap</option>
+                <option value="Rock">Rock</option>
+                <option value="Hip Hop">Hip Hop</option>
+                <option value="Electronic">Electronic</option>
+                <option value="Classical">Classical</option>
+                <option value="Indie">Indie</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-purple-200 mb-2">Status</label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+                className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
+              >
+                <option value="">Select Status</option>
+                <option value="online">Online</option>
+                <option value="planned">Planned</option>
+              </select>
+            </div>
+            <div className="col-span-2 flex gap-4">
+              <label className="flex items-center gap-2 text-purple-200">
+                <input
+                  type="checkbox"
+                  checked={filters.recently_added}
+                  onChange={(e) => handleFilterChange('recently_added', e.target.checked)}
+                  className="rounded border-purple-500/20 text-purple-500 focus:ring-purple-500"
+                />
+                Recently Added
+              </label>
+              <label className="flex items-center gap-2 text-purple-200">
+                <input
+                  type="checkbox"
+                  checked={filters.new_artist}
+                  onChange={(e) => handleFilterChange('new_artist', e.target.checked)}
+                  className="rounded border-purple-500/20 text-purple-500 focus:ring-purple-500"
+                />
+                New Artist
+              </label>
+            </div>
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Chart />
-          <div className="grid grid-cols-1 gap-6">
-            <TopItems title="Top Artists" items={topArtists} />
-            <TopItems title="Top Playlists" items={topPlaylists} />
+        <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-slate-800/50">
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Artist Name
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">Label</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Distributor
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Release Title
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Release Date
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">Genre</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Bundle
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Original Producer
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-medium text-purple-200">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-purple-500/10">
+                {loading ? (
+                  <tr>
+                    <td colSpan={9} className="px-6 py-8 text-center">
+                      <div className="flex justify-center items-center gap-2 text-purple-200">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Loading releases...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : releases.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-6 py-8 text-center text-purple-200">
+                      No releases found
+                    </td>
+                  </tr>
+                ) : (
+                  releases.map((release) => (
+                    <tr key={release.id} className="hover:bg-slate-800/50 transition-colors">
+                      <td className="px-6 py-4 text-sm text-white">{release.artist_name}</td>
+                      <td className="px-6 py-4 text-sm text-white">{release.label}</td>
+                      <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
+                      <td className="px-6 py-4 text-sm text-white">{release.title}</td>
+                      <td className="px-6 py-4 text-sm text-white">
+                        {new Date(release.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
+                      <td className="px-6 py-4 text-sm text-white">{release.bundle || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            release.status === 'online'
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-yellow-500/20 text-yellow-400'
+                          }`}
+                        >
+                          {release.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
+
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-between items-center mt-6">
+            <div className="text-sm text-purple-200">
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
+              {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} releases
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/70 transition-all duration-200"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/70 transition-all duration-200"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

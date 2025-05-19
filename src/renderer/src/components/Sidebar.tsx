@@ -9,16 +9,18 @@ import {
   Settings,
   Music,
   LogOut,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
-const Sidebar = (): JSX.Element => {
+const Sidebar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,10 +33,13 @@ const Sidebar = (): JSX.Element => {
 
   const handleLogout = async (): Promise<void> => {
     try {
+      setIsLoggingOut(true)
       await supabase.auth.signOut()
       navigate('/login')
     } catch (error) {
       console.error('Error logging out:', error)
+    } finally {
+      setIsLoggingOut(false)
     }
   }
 
@@ -98,10 +103,15 @@ const Sidebar = (): JSX.Element => {
           <div className="absolute bottom-full left-4 right-4 mb-2 bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-4 py-3 text-slate-400 hover:bg-slate-700 transition-colors"
+              disabled={isLoggingOut}
+              className="w-full flex items-center gap-2 px-4 py-3 text-slate-400 hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <LogOut className="w-4 h-4" />
-              <span>Log out</span>
+              {isLoggingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LogOut className="w-4 h-4" />
+              )}
+              <span>{isLoggingOut ? 'Logging out...' : 'Log out'}</span>
             </button>
           </div>
         )}

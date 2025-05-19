@@ -9,6 +9,7 @@ import Playlists from './pages/Playlists'
 import Bundles from './pages/Bundles'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
+import Releases from './pages/Releases'
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="flex bg-slate-50">
@@ -59,6 +60,16 @@ const App: React.FC = () => {
               <ProtectedRoute>
                 <AppLayout>
                   <Bundles />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/releases"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Releases />
                 </AppLayout>
               </ProtectedRoute>
             }

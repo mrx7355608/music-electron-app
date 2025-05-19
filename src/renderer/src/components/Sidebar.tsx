@@ -10,7 +10,8 @@ import {
   Music,
   LogOut,
   ChevronUp,
-  Loader2
+  Loader2,
+  Disc
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
@@ -27,6 +28,7 @@ const Sidebar = () => {
     { path: '/artists', label: 'Artists', icon: Mic2 },
     { path: '/playlists', label: 'Playlists', icon: PlaySquare },
     { path: '/bundles', label: 'Bundles', icon: Package },
+    { path: '/releases', label: 'Releases', icon: Disc },
     { path: '/users', label: 'Users', icon: Users },
     { path: '/settings', label: 'Settings', icon: Settings }
   ]

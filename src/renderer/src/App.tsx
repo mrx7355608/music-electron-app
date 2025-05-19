@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Artists from './pages/ArtistsPage'
+import ArtistDetails from './pages/ArtistDetails'
 import Playlists from './pages/Playlists'
 import Bundles from './pages/Bundles'
 import Users from './pages/Users'
@@ -40,6 +41,16 @@ const App: React.FC = () => {
               <ProtectedRoute>
                 <AppLayout>
                   <Artists />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artists/:id"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <ArtistDetails />
                 </AppLayout>
               </ProtectedRoute>
             }

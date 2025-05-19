@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Artist } from '@renderer/lib/types'
 import { Instagram, Twitter, Facebook, Youtube, Music, Edit2, Trash2, Loader2 } from 'lucide-react'
 import EditArtistModal from './EditArtistModal'
@@ -12,10 +13,22 @@ interface ArtistItemProps {
 
 const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps) => {
   const [showEditModal, setShowEditModal] = useState(false)
+  const navigate = useNavigate()
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return
+    }
+    navigate(`/artists/${artist.id}`)
+  }
 
   return (
     <>
-      <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6 hover:bg-slate-800/50 transition-all duration-200">
+      <div
+        onClick={handleClick}
+        className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
+      >
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-semibold text-white">{artist.real_name}</h3>
           <div className="flex gap-2">

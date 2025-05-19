@@ -30,3 +30,37 @@ export interface Release {
   original_producer: string
   status: 'online' | 'planned'
 }
+
+export interface ArtistFormData {
+  real_name: string
+  country_of_origin: string
+  label: string
+  distributor: string
+  social_media_links: {
+    instagram?: string
+    twitter?: string
+    facebook?: string
+    youtube?: string
+    spotify?: string
+  }
+  biography: string
+}
+
+export interface Artist {
+  id: string
+  real_name: string
+  country_of_origin: string
+  label: string
+  distributor: string
+  social_media_links: {
+    instagram?: string
+    twitter?: string
+    facebook?: string
+    youtube?: string
+    spotify?: string
+  }
+  biography: string
+  created_at: string
+  updated_at: string
+  created_by: string
+}

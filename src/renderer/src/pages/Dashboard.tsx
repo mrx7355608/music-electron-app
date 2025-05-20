@@ -33,33 +33,32 @@ const Dashboard = () => {
     try {
       let query = supabase
         .from('releases')
-        .select('*, artist:artist_id(id, real_name)', { count: 'exact' })
+        .select('*, artist:artist_id!inner(id, real_name)', { count: 'exact' })
 
       // Apply search
       if (searchTerm) {
-        query = query.or(
-          `artist.real_name.ilike.%${searchTerm}%,label.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
-        )
+        query = query.or(`title.ilike.%${searchTerm}%,label.ilike.%${searchTerm}%`)
       }
 
       // Apply filters
       if (filters.artist_name) {
-        query = query.eq('artist.real_name', filters.artist_name)
+        query = query.ilike('artist.real_name', `%${filters.artist_name}%`)
       }
       if (filters.label) {
-        query = query.eq('label', filters.label)
+        query = query.ilike('label', `%${filters.label}%`)
       }
       if (filters.title) {
-        query = query.eq('title', filters.title)
+        query = query.ilike('title', `%${filters.title}%`)
       }
       if (filters.date) {
-        query = query.eq('created_at', filters.date)
+        console.log(filters.date)
+        query = query.eq('release_date', filters.date)
       }
       if (filters.month) {
-        query = query.filter('created_at', 'ilike', `%-${filters.month}-%`)
+        query = query.eq('release_month', filters.month)
       }
       if (filters.year) {
-        query = query.filter('created_at', 'ilike', `${filters.year}-%`)
+        query = query.eq('release_year', filters.year)
       }
       if (filters.genre) {
         query = query.eq('genre', filters.genre)
@@ -172,12 +171,18 @@ const Dashboard = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-purple-200 mb-2">Date</label>
-              <input
-                type="date"
+              <select
                 value={filters.date}
                 onChange={(e) => handleFilterChange('date', e.target.value)}
                 className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white"
-              />
+              >
+                <option value="">Select Day</option>
+                {Array.from({ length: 30 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-purple-200 mb-2">Month</label>

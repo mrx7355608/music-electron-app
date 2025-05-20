@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Loader2, Music } from 'lucide-react'
 import { ReleaseFormData } from '../lib/types'
@@ -16,8 +16,9 @@ const genres = [
 
 const Releases = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [artists, setArtists] = useState<{ id: string; real_name: string }[]>([])
   const [formData, setFormData] = useState<ReleaseFormData>({
-    artist_name: '',
+    artist_id: '',
     label: '',
     distributor: '',
     title: '',
@@ -27,6 +28,24 @@ const Releases = () => {
     status: 'planned',
     created_at: ''
   })
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      const { data, error } = await supabase
+        .from('artists')
+        .select('id, real_name')
+        .order('real_name')
+
+      if (error) {
+        console.error('Error fetching artists:', error)
+        return
+      }
+
+      setArtists(data || [])
+    }
+
+    fetchArtists()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -41,13 +60,22 @@ const Releases = () => {
     setIsSubmitting(true)
 
     try {
-      const { error } = await supabase.from('releases').insert([formData])
+      const release_date = new Date(formData.created_at).getDay()
+      const release_month = new Date(formData.created_at).getMonth()
+      const release_year = new Date(formData.created_at).getFullYear()
+      const { error } = await supabase.from('releases').insert({
+        ...formData,
+        release_date,
+        release_month,
+        release_year,
+        created_at: new Date(formData.created_at)
+      })
 
       if (error) throw error
 
       // Reset form after successful submission
       setFormData({
-        artist_name: '',
+        artist_id: '',
         label: '',
         distributor: '',
         title: '',
@@ -81,17 +109,24 @@ const Releases = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="group">
               <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
-                Artist Name
+                Artist
               </label>
-              <input
-                type="text"
-                name="artist_name"
-                value={formData.artist_name}
+              <select
+                name="artist_id"
+                value={formData.artist_id}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
-                placeholder="Enter artist name"
-              />
+                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70 appearance-none cursor-pointer"
+              >
+                <option value="" className="bg-slate-800">
+                  Select an artist
+                </option>
+                {artists.map((artist) => (
+                  <option key={artist.id} value={artist.id} className="bg-slate-800">
+                    {artist.real_name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="group">

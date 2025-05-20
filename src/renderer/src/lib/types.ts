@@ -7,7 +7,7 @@ export interface DbUser {
 }
 
 export interface ReleaseFormData {
-  artist_name: string
+  artist_id: string
   label: string
   distributor: string
   title: string
@@ -33,6 +33,9 @@ export interface Release {
     id: string
     real_name: string
   }
+  release_date: string
+  release_month: string
+  release_year: string
 }
 
 export interface ArtistFormData {

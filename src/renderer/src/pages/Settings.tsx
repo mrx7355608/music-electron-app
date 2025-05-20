@@ -1,8 +1,24 @@
 import { useSettings } from '../hooks/useSettings'
-import { Settings as SettingsIcon, Moon, Sun, Link, List, Palette } from 'lucide-react'
-
+import {
+  Settings as SettingsIcon,
+  Moon,
+  Sun,
+  Link,
+  List,
+  Palette,
+  Download,
+  FileText,
+  Table
+} from 'lucide-react'
+import { useState } from 'react'
+import { supabase } from '@renderer/lib/supabase'
+import { saveAs } from 'file-saver'
+import { unparse } from 'papaparse'
+import * as XLSX from 'xlsx'
 const Settings = () => {
   const { settings, updateSettings } = useSettings()
+  const [isExportingCsv, setIsExportingCsv] = useState(false)
+  const [isExportingXlsx, setIsExportingXlsx] = useState(false)
 
   const handleToggle = (key: keyof typeof settings) => {
     if (key === 'theme') {
@@ -10,6 +26,100 @@ const Settings = () => {
       updateSettings({ theme: newTheme })
     } else {
       updateSettings({ [key]: !settings[key] })
+    }
+  }
+
+  const exportAsCsv = async () => {
+    setIsExportingCsv(true)
+    try {
+      const { data, error } = await supabase
+        .from('releases')
+        .select('*, artist_name:artist_id(real_name)')
+
+      if (error) {
+        console.error('Error exporting CSV:', error)
+        alert('Failed to export CSV. Please try again.')
+        return
+      }
+
+      // Create and download CSV file
+      const flatData = data.map((release) => {
+        return {
+          id: release.id,
+          created_at: release.created_at,
+          title: release.title,
+          genre: release.genre,
+          original_producer: release.original_producer,
+          bundle: release.bundle,
+          label: release.label,
+          status: release.status,
+          artist_id: release.artist_id,
+          release_year: release.release_year,
+          release_month: release.release_month,
+          release_date: release.release_date,
+          artist_name: release.artist_name.real_name
+        }
+      })
+      const csv = unparse(flatData)
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      saveAs(blob, 'releases.csv')
+    } catch (error) {
+      console.error('CSV Export error:', error)
+      alert('Failed to export CSV. Please try again.')
+    } finally {
+      setIsExportingCsv(false)
+    }
+  }
+
+  const exportAsXlsx = async () => {
+    setIsExportingXlsx(true)
+    try {
+      const { data, error } = await supabase
+        .from('releases')
+        .select('*, artist_name:artist_id(real_name)')
+
+      if (error) {
+        console.error('Error exporting XLSX:', error)
+        alert('Failed to export XLSX. Please try again.')
+        return
+      }
+
+      // Create an excel sheet
+      const flatData = data.map((release) => {
+        return {
+          id: release.id,
+          created_at: release.created_at,
+          title: release.title,
+          genre: release.genre,
+          original_producer: release.original_producer,
+          bundle: release.bundle,
+          label: release.label,
+          status: release.status,
+          artist_id: release.artist_id,
+          release_year: release.release_year,
+          release_month: release.release_month,
+          release_date: release.release_date,
+          artist_name: release.artist_name.real_name
+        }
+      })
+      const worksheet = XLSX.utils.json_to_sheet(flatData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Releases')
+      const xlsxBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      })
+
+      // Download file
+      const blob = new Blob([xlsxBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
+      saveAs(blob, 'releases.xlsx')
+    } catch (error) {
+      console.error('XLSX Export error:', error)
+      alert('Failed to export XLSX. Please try again.')
+    } finally {
+      setIsExportingXlsx(false)
     }
   }
 
@@ -120,6 +230,53 @@ const Settings = () => {
                 />
                 <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
               </label>
+            </div>
+          </div>
+
+          {/* Export Data Section */}
+          <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Download className="w-6 h-6 text-purple-400" />
+                <div>
+                  <h3 className="text-lg font-medium text-white">Export Data</h3>
+                  <p className="text-sm text-purple-200/70">
+                    Export artists data to CSV or XLSX format
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => exportAsCsv()}
+                  disabled={isExportingCsv}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white hover:cursor-pointer hover:bg-slate-800/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <FileText className="w-4 h-4" />
+                  {isExportingCsv ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-purple-200 border-t-transparent rounded-full animate-spin" />
+                      <span>Exporting...</span>
+                    </>
+                  ) : (
+                    <span>CSV</span>
+                  )}
+                </button>
+                <button
+                  onClick={() => exportAsXlsx()}
+                  disabled={isExportingXlsx}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white hover:cursor-pointer hover:bg-slate-800/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Table className="w-4 h-4" />
+                  {isExportingXlsx ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-purple-200 border-t-transparent rounded-full animate-spin" />
+                      <span>Exporting...</span>
+                    </>
+                  ) : (
+                    <span>XLSX</span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

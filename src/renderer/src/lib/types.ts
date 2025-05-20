@@ -20,15 +20,19 @@ export interface ReleaseFormData {
 
 export interface Release {
   id: string
-  artist_name: string
+  artist_id: string
   label: string
   distributor: string
   title: string
-  created_at: string
   genre: string
-  bundle: string | null
+  bundle?: string
   original_producer: string
   status: 'online' | 'planned'
+  created_at: string
+  artist: {
+    id: string
+    real_name: string
+  }
 }
 
 export interface ArtistFormData {
@@ -60,7 +64,5 @@ export interface Artist {
     spotify?: string
   }
   biography: string
-  created_at: string
-  updated_at: string
   created_by: string
 }

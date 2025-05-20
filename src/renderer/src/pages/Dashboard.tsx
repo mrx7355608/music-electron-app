@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Search, Filter, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { Release } from '../lib/types'
+import { useNavigate } from 'react-router-dom'
 
 const ITEMS_PER_PAGE = 10
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const [releases, setReleases] = useState<Release[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,18 +31,20 @@ const Dashboard = () => {
   const fetchReleases = async () => {
     setLoading(true)
     try {
-      let query = supabase.from('releases').select('*', { count: 'exact' })
+      let query = supabase
+        .from('releases')
+        .select('*, artist:artist_id(id, real_name)', { count: 'exact' })
 
       // Apply search
       if (searchTerm) {
         query = query.or(
-          `artist_name.ilike.%${searchTerm}%,label.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
+          `artist.real_name.ilike.%${searchTerm}%,label.ilike.%${searchTerm}%,title.ilike.%${searchTerm}%`
         )
       }
 
       // Apply filters
       if (filters.artist_name) {
-        query = query.eq('artist_name', filters.artist_name)
+        query = query.eq('artist.real_name', filters.artist_name)
       }
       if (filters.label) {
         query = query.eq('label', filters.label)
@@ -70,9 +74,7 @@ const Dashboard = () => {
         query = query.order('created_at', { ascending: false })
       }
       if (filters.new_artist) {
-        // This would need a more complex query to identify new artists
-        // For now, we'll just order by artist_name
-        query = query.order('artist_name', { ascending: true })
+        query = query.order('artist.real_name', { ascending: true })
       }
 
       // Add pagination
@@ -315,7 +317,14 @@ const Dashboard = () => {
                 ) : (
                   releases.map((release) => (
                     <tr key={release.id} className="hover:bg-slate-800/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-white">{release.artist_name}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <button
+                          onClick={() => navigate(`/artists/${release.artist.id}`)}
+                          className="text-white hover:underline hover:cursor-pointer"
+                        >
+                          {release.artist.real_name}
+                        </button>
+                      </td>
                       <td className="px-6 py-4 text-sm text-white">{release.label}</td>
                       <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
                       <td className="px-6 py-4 text-sm text-white">{release.title}</td>
@@ -326,14 +335,8 @@ const Dashboard = () => {
                       <td className="px-6 py-4 text-sm text-white">{release.bundle || '-'}</td>
                       <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
                       <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            release.status === 'online'
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-yellow-500/20 text-yellow-400'
-                          }`}
-                        >
-                          {release.status}
+                        <span className="font-medium text-white">
+                          {release.status.toUpperCase()}
                         </span>
                       </td>
                     </tr>

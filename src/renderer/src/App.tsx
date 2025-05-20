@@ -11,6 +11,7 @@ import Bundles from './pages/Bundles'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
 import Releases from './pages/Releases'
+import { SettingsProvider } from './providers/SettingsProvider'
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="flex bg-slate-50">
@@ -22,92 +23,94 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Dashboard />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/artists"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Artists />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/artists/:id"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <ArtistDetails />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/playlists"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Playlists />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/bundles"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Bundles />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/releases"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Releases />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Users />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <Settings />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
+      <SettingsProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/artists"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Artists />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/artists/:id"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <ArtistDetails />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/playlists"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Playlists />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bundles"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Bundles />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/releases"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Releases />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Users />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Settings />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </SettingsProvider>
     </AuthProvider>
   )
 }

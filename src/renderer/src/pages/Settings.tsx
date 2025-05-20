@@ -1,66 +1,125 @@
-import React from 'react'
+import { useSettings } from '../hooks/useSettings'
+import { Settings as SettingsIcon, Moon, Sun, Link, List, Palette } from 'lucide-react'
 
-const Settings: React.FC = () => {
+const Settings = () => {
+  const { settings, updateSettings } = useSettings()
+
+  const handleToggle = (key: keyof typeof settings) => {
+    if (key === 'theme') {
+      const newTheme = settings.theme === 'dark' ? 'light' : 'dark'
+      updateSettings({ theme: newTheme })
+    } else {
+      updateSettings({ [key]: !settings[key] })
+    }
+  }
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
-      <div className="max-w-2xl bg-white rounded-lg shadow-md p-6">
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 mb-8">
+          <SettingsIcon className="w-8 h-8 text-purple-400" />
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
+            Settings
+          </h1>
+        </div>
+
         <div className="space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">General</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Theme</label>
-                <select className="w-full border rounded-lg px-3 py-2">
-                  <option>Light</option>
-                  <option>Dark</option>
-                  <option>System</option>
-                </select>
+          {/* Theme Setting */}
+          <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {settings.theme === 'dark' ? (
+                  <Moon className="w-6 h-6 text-purple-400" />
+                ) : (
+                  <Sun className="w-6 h-6 text-purple-400" />
+                )}
+                <div>
+                  <h3 className="text-lg font-medium text-white">Theme</h3>
+                  <p className="text-sm text-purple-200/70">Choose your preferred theme</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                <select className="w-full border rounded-lg px-3 py-2">
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                </select>
-              </div>
+              <select
+                value={settings.theme}
+                onChange={(e) => updateSettings({ theme: e.target.value as 'light' | 'dark' })}
+                className="px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white hover:bg-slate-800/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent appearance-none cursor-pointer"
+              >
+                <option value="dark" className="bg-slate-800">
+                  Dark
+                </option>
+                <option value="light" className="bg-slate-800">
+                  Light
+                </option>
+              </select>
             </div>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Audio</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Output Device
-                </label>
-                <select className="w-full border rounded-lg px-3 py-2">
-                  <option>System Default</option>
-                </select>
+          {/* Link Activation Setting */}
+          <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link className="w-6 h-6 text-purple-400" />
+                <div>
+                  <h3 className="text-lg font-medium text-white">Link Activation</h3>
+                  <p className="text-sm text-purple-200/70">Enable hyperlink activation</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quality</label>
-                <select className="w-full border rounded-lg px-3 py-2">
-                  <option>High (320 kbps)</option>
-                  <option>Medium (160 kbps)</option>
-                  <option>Low (96 kbps)</option>
-                </select>
-              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.link_activation_enabled}
+                  onChange={() => handleToggle('link_activation_enabled')}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              </label>
             </div>
           </div>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Storage</h2>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <input type="checkbox" className="mr-2" id="offline-mode" />
-                <label htmlFor="offline-mode">Enable offline mode</label>
+          {/* Show Uncategorized Songs Setting */}
+          <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <List className="w-6 h-6 text-purple-400" />
+                <div>
+                  <h3 className="text-lg font-medium text-white">Show Uncategorized Songs</h3>
+                  <p className="text-sm text-purple-200/70">
+                    Display songs that are not in any playlist
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Cache: 0 MB used</p>
-                <button className="mt-2 text-blue-600 hover:text-blue-700">Clear cache</button>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.show_uncategorized_songs}
+                  onChange={() => handleToggle('show_uncategorized_songs')}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              </label>
+            </div>
+          </div>
+
+          {/* Color Code Songs Setting */}
+          <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Palette className="w-6 h-6 text-purple-400" />
+                <div>
+                  <h3 className="text-lg font-medium text-white">Color Code Songs</h3>
+                  <p className="text-sm text-purple-200/70">
+                    Enable color coding for different song types
+                  </p>
+                </div>
               </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.show_color_code_songs}
+                  onChange={() => handleToggle('show_color_code_songs')}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              </label>
             </div>
           </div>
         </div>

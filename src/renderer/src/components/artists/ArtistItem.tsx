@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Artist } from '@renderer/lib/types'
 import { Instagram, Twitter, Facebook, Youtube, Music, Edit2, Trash2, Loader2 } from 'lucide-react'
 import EditArtistModal from './EditArtistModal'
+import { useSettings } from '../../hooks/useSettings'
 
 interface ArtistItemProps {
   artist: Artist
@@ -14,6 +15,7 @@ interface ArtistItemProps {
 const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps) => {
   const [showEditModal, setShowEditModal] = useState(false)
   const navigate = useNavigate()
+  const { settings } = useSettings()
 
   const handleClick = (e: React.MouseEvent) => {
     // Don't navigate if clicking on buttons
@@ -21,6 +23,25 @@ const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps)
       return
     }
     navigate(`/artists/${artist.id}`)
+  }
+
+  const renderSocialLink = (url: string | undefined, icon: React.ReactNode) => {
+    if (!url) return null
+
+    if (settings.link_activation_enabled) {
+      return (
+        <Link
+          to={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-400 hover:text-purple-300 transition-colors"
+        >
+          {icon}
+        </Link>
+      )
+    }
+
+    return <span className="text-purple-400">{icon}</span>
   }
 
   return (
@@ -59,56 +80,11 @@ const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps)
         </div>
         <p className="text-purple-200/80 text-sm mb-4 line-clamp-3">{artist.biography}</p>
         <div className="flex gap-3">
-          {artist.social_media_links.instagram && (
-            <a
-              href={artist.social_media_links.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              <Instagram className="w-5 h-5" />
-            </a>
-          )}
-          {artist.social_media_links.twitter && (
-            <a
-              href={artist.social_media_links.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              <Twitter className="w-5 h-5" />
-            </a>
-          )}
-          {artist.social_media_links.facebook && (
-            <a
-              href={artist.social_media_links.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              <Facebook className="w-5 h-5" />
-            </a>
-          )}
-          {artist.social_media_links.youtube && (
-            <a
-              href={artist.social_media_links.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              <Youtube className="w-5 h-5" />
-            </a>
-          )}
-          {artist.social_media_links.spotify && (
-            <a
-              href={artist.social_media_links.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              <Music className="w-5 h-5" />
-            </a>
-          )}
+          {renderSocialLink(artist.social_media_links.instagram, <Instagram className="w-5 h-5" />)}
+          {renderSocialLink(artist.social_media_links.twitter, <Twitter className="w-5 h-5" />)}
+          {renderSocialLink(artist.social_media_links.facebook, <Facebook className="w-5 h-5" />)}
+          {renderSocialLink(artist.social_media_links.youtube, <Youtube className="w-5 h-5" />)}
+          {renderSocialLink(artist.social_media_links.spotify, <Music className="w-5 h-5" />)}
         </div>
       </div>
 

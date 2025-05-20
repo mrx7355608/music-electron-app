@@ -69,3 +69,10 @@ export interface Artist {
   biography: string
   created_by: string
 }
+
+export interface Settings {
+  theme: 'light' | 'dark'
+  link_activation_enabled: boolean
+  show_uncategorized_songs: boolean
+  show_color_code_songs: boolean
+}

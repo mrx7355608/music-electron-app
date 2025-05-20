@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '@renderer/lib/supabase'
 import { Artist } from '@renderer/lib/types'
 import {
@@ -16,6 +16,7 @@ import {
   Truck
 } from 'lucide-react'
 import EditArtistModal from '@renderer/components/artists/EditArtistModal'
+import { useSettings } from '../hooks/useSettings'
 
 const ArtistDetails = () => {
   const { id } = useParams<{ id: string }>()
@@ -23,6 +24,7 @@ const ArtistDetails = () => {
   const [artist, setArtist] = useState<Artist | null>(null)
   const [loading, setLoading] = useState(true)
   const [showEditModal, setShowEditModal] = useState(false)
+  const { settings } = useSettings()
 
   const fetchArtist = async () => {
     if (!id) return
@@ -42,6 +44,31 @@ const ArtistDetails = () => {
   useEffect(() => {
     fetchArtist()
   }, [id])
+
+  const renderSocialLink = (url: string | undefined, icon: React.ReactNode, label: string) => {
+    if (!url) return null
+
+    if (settings.link_activation_enabled) {
+      return (
+        <Link
+          to={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
+        >
+          {icon}
+          <span>{label}</span>
+        </Link>
+      )
+    }
+
+    return (
+      <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200">
+        {icon}
+        <span>{label}</span>
+      </div>
+    )
+  }
 
   if (loading) {
     return (
@@ -71,7 +98,6 @@ const ArtistDetails = () => {
   return (
     <div className="p-8 bg-slate-900 min-h-screen">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -93,7 +119,6 @@ const ArtistDetails = () => {
           </button>
         </div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-3 gap-8">
           {/* Left Column - Basic Info */}
           <div className="col-span-1 space-y-6">
@@ -130,60 +155,30 @@ const ArtistDetails = () => {
             <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
               <h2 className="text-lg font-semibold text-white mb-4">Social Media</h2>
               <div className="grid grid-cols-2 gap-4">
-                {artist.social_media_links.instagram && (
-                  <a
-                    href={artist.social_media_links.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
-                  >
-                    <Instagram className="w-5 h-5" />
-                    <span>Instagram</span>
-                  </a>
+                {renderSocialLink(
+                  artist.social_media_links.instagram,
+                  <Instagram className="w-5 h-5" />,
+                  'Instagram'
                 )}
-                {artist.social_media_links.twitter && (
-                  <a
-                    href={artist.social_media_links.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
-                  >
-                    <Twitter className="w-5 h-5" />
-                    <span>Twitter</span>
-                  </a>
+                {renderSocialLink(
+                  artist.social_media_links.twitter,
+                  <Twitter className="w-5 h-5" />,
+                  'Twitter'
                 )}
-                {artist.social_media_links.facebook && (
-                  <a
-                    href={artist.social_media_links.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
-                  >
-                    <Facebook className="w-5 h-5" />
-                    <span>Facebook</span>
-                  </a>
+                {renderSocialLink(
+                  artist.social_media_links.facebook,
+                  <Facebook className="w-5 h-5" />,
+                  'Facebook'
                 )}
-                {artist.social_media_links.youtube && (
-                  <a
-                    href={artist.social_media_links.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
-                  >
-                    <Youtube className="w-5 h-5" />
-                    <span>YouTube</span>
-                  </a>
+                {renderSocialLink(
+                  artist.social_media_links.youtube,
+                  <Youtube className="w-5 h-5" />,
+                  'YouTube'
                 )}
-                {artist.social_media_links.spotify && (
-                  <a
-                    href={artist.social_media_links.spotify}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
-                  >
-                    <Music className="w-5 h-5" />
-                    <span>Spotify</span>
-                  </a>
+                {renderSocialLink(
+                  artist.social_media_links.spotify,
+                  <Music className="w-5 h-5" />,
+                  'Spotify'
                 )}
               </div>
             </div>

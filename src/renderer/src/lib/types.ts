@@ -77,3 +77,9 @@ export interface Settings {
   show_uncategorized_songs: boolean
   show_color_code_songs: boolean
 }
+
+export interface Bundle {
+  id: string
+  name: string
+  total_releases: number
+}

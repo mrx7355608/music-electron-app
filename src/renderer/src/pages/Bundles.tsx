@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { Plus, X, Loader2 } from 'lucide-react'
-import { Release } from '../lib/types'
+import { Release, Bundle } from '../lib/types'
 
 const Bundles: React.FC = () => {
   const [showModal, setShowModal] = useState(false)
@@ -10,7 +10,7 @@ const Bundles: React.FC = () => {
   const [selectedReleases, setSelectedReleases] = useState<Release[]>([])
   const [isCreating, setIsCreating] = useState(false)
   const [isLoadingReleases, setIsLoadingReleases] = useState(true)
-  const [bundles, setBundles] = useState<any[]>([])
+  const [bundles, setBundles] = useState<Bundle[]>([])
   const [isLoadingBundles, setIsLoadingBundles] = useState(true)
 
   const fetchReleases = async () => {
@@ -19,6 +19,7 @@ const Bundles: React.FC = () => {
       const { data, error } = await supabase
         .from('releases')
         .select('*, artist:artist_id!inner(id, real_name)')
+        .is('bundle_id', null)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -35,7 +36,7 @@ const Bundles: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('bundles')
-        .select('*, releases(*)')
+        .select('*')
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -57,17 +58,18 @@ const Bundles: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('bundles')
-        .insert({ name: bundleName })
+        .insert({ name: bundleName, total_releases: selectedReleases.length })
         .select()
         .single()
 
       if (error) throw error
+
+      // Update releases with bundle_ide
       const bundleId = data.id
       const promises = selectedReleases.map((r) =>
         supabase.from('releases').update({ bundle_id: bundleId }).eq('id', r.id)
       )
-      const results = await Promise.all(promises)
-      console.log(results)
+      await Promise.all(promises)
 
       setShowModal(false)
       setBundleName('')
@@ -125,9 +127,7 @@ const Bundles: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-lg font-medium text-white">{bundle.name}</h3>
-                      <p className="text-sm text-purple-200">
-                        {bundle.releases?.length || 0} releases
-                      </p>
+                      <p className="text-sm text-purple-200">{bundle.total_releases} releases</p>
                     </div>
                   </div>
                 </div>

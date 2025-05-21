@@ -1,8 +1,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Search, Filter, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Table,
+  FileText,
+  ChevronDown
+} from 'lucide-react'
 import { Release } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
+import { saveAs } from 'file-saver'
+import { unparse } from 'papaparse'
+import * as XLSX from 'xlsx'
 
 const ITEMS_PER_PAGE = 10
 
@@ -27,6 +39,9 @@ const Dashboard = () => {
     new_artist: false
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [isExportingCsv, setIsExportingCsv] = useState(false)
+  const [isExportingXlsx, setIsExportingXlsx] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
 
   const fetchReleases = async () => {
     setLoading(true)
@@ -110,6 +125,80 @@ const Dashboard = () => {
     setCurrentPage(1) // Reset to first page when search changes
   }
 
+  const exportAsCsv = async () => {
+    setIsExportingCsv(true)
+    try {
+      // Create and download CSV file
+      const flatData = releases.map((release) => {
+        return {
+          id: release.id,
+          created_at: release.created_at,
+          title: release.title,
+          genre: release.genre,
+          original_producer: release.original_producer,
+          bundle: release.bundle,
+          label: release.label,
+          status: release.status,
+          artist_id: release.artist_id,
+          release_year: release.release_year,
+          release_month: release.release_month,
+          release_date: release.release_date,
+          artist_name: release.artist.real_name
+        }
+      })
+      const csv = unparse(flatData)
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      saveAs(blob, 'releases.csv')
+    } catch (error) {
+      console.error('CSV Export error:', error)
+      alert('Failed to export CSV. Please try again.')
+    } finally {
+      setIsExportingCsv(false)
+    }
+  }
+
+  const exportAsXlsx = async () => {
+    setIsExportingXlsx(true)
+    try {
+      // Create an excel sheet
+      const flatData = releases.map((release) => {
+        return {
+          id: release.id,
+          created_at: release.created_at,
+          title: release.title,
+          genre: release.genre,
+          original_producer: release.original_producer,
+          bundle: release.bundle,
+          label: release.label,
+          status: release.status,
+          artist_id: release.artist_id,
+          release_year: release.release_year,
+          release_month: release.release_month,
+          release_date: release.release_date,
+          artist_name: release.artist.real_name
+        }
+      })
+      const worksheet = XLSX.utils.json_to_sheet(flatData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Releases')
+      const xlsxBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      })
+
+      // Download file
+      const blob = new Blob([xlsxBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
+      saveAs(blob, 'releases.xlsx')
+    } catch (error) {
+      console.error('XLSX Export error:', error)
+      alert('Failed to export XLSX. Please try again.')
+    } finally {
+      setIsExportingXlsx(false)
+    }
+  }
+
   return (
     <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -118,6 +207,56 @@ const Dashboard = () => {
             Releases Dashboard
           </h1>
           <div className="flex gap-4">
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white hover:cursor-pointer hover:bg-slate-800/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Export</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 mt-2 w-48 rounded-lg bg-slate-800/90 border border-purple-500/20 shadow-lg z-10">
+                  <button
+                    onClick={() => {
+                      exportAsCsv()
+                      setShowExportMenu(false)
+                    }}
+                    disabled={isExportingCsv}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-white hover:bg-slate-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <FileText className="w-4 h-4" />
+                    {isExportingCsv ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-purple-200 border-t-transparent rounded-full animate-spin" />
+                        <span>Exporting...</span>
+                      </>
+                    ) : (
+                      <span>Export as CSV</span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      exportAsXlsx()
+                      setShowExportMenu(false)
+                    }}
+                    disabled={isExportingXlsx}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-white hover:bg-slate-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Table className="w-4 h-4" />
+                    {isExportingXlsx ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-purple-200 border-t-transparent rounded-full animate-spin" />
+                        <span>Exporting...</span>
+                      </>
+                    ) : (
+                      <span>Export as XLSX</span>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
               <input

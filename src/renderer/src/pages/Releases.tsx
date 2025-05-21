@@ -60,6 +60,7 @@ const Releases = () => {
     setIsSubmitting(true)
 
     try {
+      const { data: user } = await supabase.auth.getUser()
       const release_date = new Date(formData.created_at).getDay()
       const release_month = new Date(formData.created_at).getMonth()
       const release_year = new Date(formData.created_at).getFullYear()
@@ -68,7 +69,8 @@ const Releases = () => {
         release_date,
         release_month,
         release_year,
-        created_at: new Date(formData.created_at)
+        created_at: new Date(formData.created_at),
+        created_by: user.user?.id
       })
 
       if (error) throw error

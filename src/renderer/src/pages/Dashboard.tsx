@@ -48,7 +48,9 @@ const Dashboard = () => {
     try {
       let query = supabase
         .from('releases')
-        .select('*, artist:artist_id!inner(id, real_name)', { count: 'exact' })
+        .select('*, artist:artist_id!inner(id, real_name), bundle:bundle_id(name)', {
+          count: 'exact'
+        })
 
       // Apply search
       if (searchTerm) {
@@ -79,7 +81,7 @@ const Dashboard = () => {
         query = query.eq('genre', filters.genre)
       }
       if (filters.bundle) {
-        query = query.eq('bundle', filters.bundle)
+        query = query.ilike('bundle.name', `%${filters.bundle}%`)
       }
       if (filters.status) {
         query = query.eq('status', filters.status)
@@ -132,11 +134,11 @@ const Dashboard = () => {
       const flatData = releases.map((release) => {
         return {
           id: release.id,
-          created_at: release.created_at,
+          created_at: new Date(release.created_at).toLocaleDateString(),
           title: release.title,
           genre: release.genre,
           original_producer: release.original_producer,
-          bundle: release.bundle,
+          bundle_name: release.bundle?.name,
           label: release.label,
           status: release.status,
           artist_id: release.artist_id,
@@ -164,11 +166,11 @@ const Dashboard = () => {
       const flatData = releases.map((release) => {
         return {
           id: release.id,
-          created_at: release.created_at,
+          created_at: new Date(release.created_at).toLocaleDateString(),
           title: release.title,
           genre: release.genre,
           original_producer: release.original_producer,
-          bundle: release.bundle,
+          bundle_name: release.bundle?.name,
           label: release.label,
           status: release.status,
           artist_id: release.artist_id,
@@ -476,7 +478,9 @@ const Dashboard = () => {
                         {new Date(release.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
-                      <td className="px-6 py-4 text-sm text-white">{release.bundle || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-white">
+                        {release.bundle?.name || '-'}
+                      </td>
                       <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
                       <td className="px-6 py-4 text-sm">
                         <span className="font-medium text-white">

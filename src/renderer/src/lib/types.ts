@@ -25,7 +25,8 @@ export interface Release {
   distributor: string
   title: string
   genre: string
-  bundle?: string
+  bundle_id: string | null
+  bundle?: { name: string }
   original_producer: string
   status: 'online' | 'planned'
   created_at: string

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import Artists from './pages/ArtistsPage'
 import ArtistDetails from './pages/ArtistDetails'
 import Playlists from './pages/Playlists'
+import PlaylistDetails from './pages/PlaylistDetails'
 import Bundles from './pages/Bundles'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
@@ -64,6 +65,16 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <AppLayout>
                     <Playlists />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/playlists/:id"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <PlaylistDetails />
                   </AppLayout>
                 </ProtectedRoute>
               }

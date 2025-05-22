@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Artist, Track } from '@renderer/lib/types'
+import { useSettings } from '@renderer/hooks/useSettings'
 
 interface ColorCode {
   [key: string]: string[]
@@ -19,6 +20,7 @@ const Tracks = () => {
     artist_id: '',
     duration: ''
   })
+  const { settings } = useSettings()
 
   useEffect(() => {
     loadData()
@@ -38,15 +40,18 @@ const Tracks = () => {
       if (tracksResponse.error) throw tracksResponse.error
       if (artistsResponse.error) throw artistsResponse.error
 
-      const promises = tracksResponse.data.map((track) => {
-        return fetchColorCodes(track.id)
-      })
-
-      const colorCodes = await Promise.all(promises)
-      setColorCodes(colorCodes)
-
       setTracks(tracksResponse.data)
       setArtists(artistsResponse.data)
+
+      // Fetch color codes if the setting is enabled
+      if (settings.show_color_code_songs) {
+        const promises = tracksResponse.data.map((track) => {
+          return fetchColorCodes(track.id)
+        })
+
+        const colorCodes = await Promise.all(promises)
+        setColorCodes(colorCodes)
+      }
     } catch (error) {
       console.error('Error loading data:', error)
       alert('Error loading tracks')

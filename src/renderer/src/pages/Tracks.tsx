@@ -15,6 +15,7 @@ const Tracks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [colorCodes, setColorCodes] = useState<ColorCode[]>([])
+  const [uncategorizedSongs, setUncategorizedSongs] = useState<string[]>([])
   const [formData, setFormData] = useState({
     title: '',
     artist_id: '',
@@ -52,6 +53,12 @@ const Tracks = () => {
         const colorCodes = await Promise.all(promises)
         setColorCodes(colorCodes)
       }
+
+      if (settings.show_uncategorized_songs) {
+        const uncategorizedSongs = await fetchUncategorizedSongs() // get all songs with no playlist_id (null)
+        console.log(uncategorizedSongs)
+        setUncategorizedSongs(uncategorizedSongs.map((d) => d.track_id))
+      }
     } catch (error) {
       console.error('Error loading data:', error)
       alert('Error loading tracks')
@@ -67,21 +74,44 @@ const Tracks = () => {
       .eq('track_id', trackId)
 
     if (error) throw error
-    const colorCodes = data?.map((pt) => pt.playlist.color_code)
+    const filteredData = data?.filter((pt) => pt.playlist !== null)
+    const colorCodes = filteredData?.map((pt) => pt.playlist.color_code)
     return { [trackId]: colorCodes }
+  }
+
+  const fetchUncategorizedSongs = async () => {
+    const { data, error } = await supabase
+      .from('playlists_tracks')
+      .select('*')
+      .is('playlist_id', null)
+
+    if (error) throw error
+
+    return data
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       setIsSubmitting(true)
-      const { error } = await supabase.from('tracks').insert({
-        title: formData.title,
-        artist_id: formData.artist_id,
-        duration: parseInt(formData.duration)
-      })
+      const { data, error } = await supabase
+        .from('tracks')
+        .insert({
+          title: formData.title,
+          artist_id: formData.artist_id,
+          duration: parseInt(formData.duration)
+        })
+        .select()
+        .single()
 
       if (error) throw error
+
+      // Add track to uncategorized playlist
+      const { error: updateError } = await supabase
+        .from('playlists_tracks')
+        .insert({ track_id: data.id, playlist_id: null })
+
+      if (updateError) throw updateError
 
       await loadData()
       setIsModalOpen(false)
@@ -140,25 +170,29 @@ const Tracks = () => {
               </thead>
               <tbody>
                 {tracks.map((track) => (
-                  <tr key={track.id} className="border-b border-[#282828] hover:bg-[#282828]">
+                  <tr
+                    key={track.id}
+                    className={`${uncategorizedSongs.includes(track.id) ? 'bg-red-950 hover:bg-red-800' : 'hover:bg-[#282828]'} border-b border-[#282828]`}
+                  >
                     <td className="px-6 py-4 text-white">{track.title}</td>
                     <td className="px-6 py-4 text-white">{track.artist.real_name || 'N/A'}</td>
                     <td className="px-6 py-4 text-white">{formatDuration(track.duration)}</td>
                     <td className="px-6 py-4 text-white">{formatDate(track.created_at)}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        {colorCodes
-                          .filter((color) => color[track.id])[0]
-                          [track.id].map((color, index) => {
-                            return (
-                              <div
-                                key={index}
-                                className="w-8 h-8 rounded-md"
-                                style={{ backgroundColor: color }}
-                                title={color}
-                              />
-                            )
-                          })}
+                        {colorCodes.length > 1 &&
+                          colorCodes
+                            .filter((color) => color[track.id])[0]
+                            [track.id].map((color, index) => {
+                              return (
+                                <div
+                                  key={index}
+                                  className="w-8 h-8 rounded-md"
+                                  style={{ backgroundColor: color }}
+                                  title={color}
+                                />
+                              )
+                            })}
                       </div>
                     </td>
                   </tr>

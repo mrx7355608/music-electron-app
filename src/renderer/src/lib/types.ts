@@ -10,7 +10,6 @@ export interface ReleaseFormData {
   artist_id: string
   label: string
   distributor: string
-  title: string
   genre: string
   original_producer: string
   status: 'online' | 'planned'
@@ -22,20 +21,24 @@ export interface Release {
   artist_id: string
   label: string
   distributor: string
-  title: string
   genre: string
   bundle_id: string | null
   bundle?: { name: string }
   original_producer: string
   status: 'online' | 'planned'
   created_at: string
+  created_by: string
+  release_date: string
+  release_month: string
+  release_year: string
   artist: {
     id: string
     real_name: string
   }
-  release_date: string
-  release_month: string
-  release_year: string
+  tracks?: {
+    id: string
+    title: string
+  }[]
 }
 
 export interface ArtistFormData {

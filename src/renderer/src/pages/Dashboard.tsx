@@ -36,11 +36,17 @@ const Dashboard = () => {
   const fetchReleases = async () => {
     setLoading(true)
     try {
-      let query = supabase
-        .from('releases')
-        .select('*, artist:artist_id!inner(id, real_name), bundle:bundle_id(name)', {
+      let query = supabase.from('releases').select(
+        `
+          *,
+          artist:artist_id!inner(id, real_name),
+          bundle:bundle_id(name),
+          tracks:tracks!release_id(title)
+        `,
+        {
           count: 'exact'
-        })
+        }
+      )
 
       // Apply search
       if (searchTerm) {
@@ -61,6 +67,7 @@ const Dashboard = () => {
         query = query.eq('release_date', String(filters.date).padStart(2, '0'))
       }
       if (filters.month) {
+        console.log(filters.month)
         query = query.eq('release_month', filters.month)
       }
       if (filters.year) {
@@ -124,7 +131,7 @@ const Dashboard = () => {
         return {
           id: release.id,
           created_at: new Date(release.created_at).toLocaleDateString(),
-          title: release.title,
+          title: release.tracks?.map((track) => track.title).join('\n'),
           genre: release.genre,
           original_producer: release.original_producer,
           bundle_name: release.bundle?.name,
@@ -156,7 +163,7 @@ const Dashboard = () => {
         return {
           id: release.id,
           created_at: new Date(release.created_at).toLocaleDateString(),
-          title: release.title,
+          title: release.tracks?.map((track) => track.title).join('\n'),
           genre: release.genre,
           original_producer: release.original_producer,
           bundle_name: release.bundle?.name,
@@ -396,7 +403,7 @@ const Dashboard = () => {
                     Distributor
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-[#B3B3B3]">
-                    Release Title
+                    Release Title(s)
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-[#B3B3B3]">
                     Release Date
@@ -438,7 +445,15 @@ const Dashboard = () => {
                       </td>
                       <td className="px-6 py-4 text-sm text-white">{release.label}</td>
                       <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
-                      <td className="px-6 py-4 text-sm text-white">{release.title}</td>
+                      <td className="px-6 py-4 text-sm text-white">
+                        <div className="space-y-2">
+                          {release.tracks?.map((track) => (
+                            <div key={track.id} className="text-white">
+                              {track.title},
+                            </div>
+                          ))}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-sm text-white">
                         {new Date(release.created_at).toLocaleDateString()}
                       </td>

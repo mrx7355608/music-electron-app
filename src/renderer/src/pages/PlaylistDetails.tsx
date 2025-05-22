@@ -174,7 +174,6 @@ const PlaylistDetails = () => {
 
       if (error) throw error
 
-      console.log(playlist?.id)
       const { error: updateError } = await supabase
         .from('playlists')
         .update({

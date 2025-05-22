@@ -3,12 +3,17 @@ import { Plus, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { Artist, Track } from '@renderer/lib/types'
 
+interface ColorCode {
+  [key: string]: string[]
+}
+
 const Tracks = () => {
   const [tracks, setTracks] = useState<Track[]>([])
   const [artists, setArtists] = useState<Artist[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [colorCodes, setColorCodes] = useState<ColorCode[]>([])
   const [formData, setFormData] = useState({
     title: '',
     artist_id: '',
@@ -33,6 +38,13 @@ const Tracks = () => {
       if (tracksResponse.error) throw tracksResponse.error
       if (artistsResponse.error) throw artistsResponse.error
 
+      const promises = tracksResponse.data.map((track) => {
+        return fetchColorCodes(track.id)
+      })
+
+      const colorCodes = await Promise.all(promises)
+      setColorCodes(colorCodes)
+
       setTracks(tracksResponse.data)
       setArtists(artistsResponse.data)
     } catch (error) {
@@ -41,6 +53,17 @@ const Tracks = () => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const fetchColorCodes = async (trackId: string) => {
+    const { data, error } = await supabase
+      .from('playlists_tracks')
+      .select('*, playlist:playlist_id(color_code)')
+      .eq('track_id', trackId)
+
+    if (error) throw error
+    const colorCodes = data?.map((pt) => pt.playlist.color_code)
+    return { [trackId]: colorCodes }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,6 +130,7 @@ const Tracks = () => {
                   <th className="px-6 py-4 text-left text-[#B3B3B3] font-medium">Artist</th>
                   <th className="px-6 py-4 text-left text-[#B3B3B3] font-medium">Duration</th>
                   <th className="px-6 py-4 text-left text-[#B3B3B3] font-medium">Date Added</th>
+                  <th className="px-6 py-4 text-left text-[#B3B3B3] font-medium">Color Codes</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,6 +140,22 @@ const Tracks = () => {
                     <td className="px-6 py-4 text-white">{track.artist.real_name || 'N/A'}</td>
                     <td className="px-6 py-4 text-white">{formatDuration(track.duration)}</td>
                     <td className="px-6 py-4 text-white">{formatDate(track.created_at)}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        {colorCodes
+                          .filter((color) => color[track.id])[0]
+                          [track.id].map((color, index) => {
+                            return (
+                              <div
+                                key={index}
+                                className="w-8 h-8 rounded-md"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            )
+                          })}
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

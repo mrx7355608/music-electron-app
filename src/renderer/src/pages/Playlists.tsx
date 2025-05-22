@@ -117,13 +117,6 @@ const Playlists = () => {
       <div className="max-w-7xl mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Playlists</h1>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white rounded-lg hover:bg-[#1ed760] transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Create New Playlist
-          </button>
         </div>
 
         {/* Playlist Accordion */}
@@ -157,6 +150,35 @@ const Playlists = () => {
 
           {isExpanded && (
             <div className="px-6 py-4 border-t border-[#282828]">
+              <div className="grid grid-cols-4 gap-4 mb-6">
+                <div className="bg-[#282828] p-4 rounded-lg">
+                  <h4 className="text-[#B3B3B3] text-sm mb-1">Email</h4>
+                  <p className="text-white">user1@example.com</p>
+                </div>
+                <div className="bg-[#282828] p-4 rounded-lg">
+                  <h4 className="text-[#B3B3B3] text-sm mb-1">Password</h4>
+                  <p className="text-white">••••••••</p>
+                </div>
+                <div className="bg-[#282828] p-4 rounded-lg">
+                  <h4 className="text-[#B3B3B3] text-sm mb-1">Creator</h4>
+                  <p className="text-white">John Doe</p>
+                </div>
+                <div className="bg-[#282828] p-4 rounded-lg">
+                  <h4 className="text-[#B3B3B3] text-sm mb-1">Location</h4>
+                  <p className="text-white">New York, USA</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white rounded-lg hover:bg-[#1ed760] transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                  Create New Playlist
+                </button>
+              </div>
+
               {loading ? (
                 <div className="flex justify-center items-center py-8">
                   <Loader2 className="w-6 h-6 text-[#1DB954] animate-spin" />

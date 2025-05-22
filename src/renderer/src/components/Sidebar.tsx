@@ -46,10 +46,10 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-64 bg-slate-900 h-screen fixed left-0 top-0 flex flex-col shadow-xl">
-      <div className="p-6 border-b border-slate-800">
+    <div className="w-64 bg-[#121212] h-screen fixed left-0 top-0 flex flex-col shadow-xl">
+      <div className="p-6 border-b border-[#282828]">
         <div className="flex items-center gap-3">
-          <Music className="w-8 h-8 text-blue-500" />
+          <Music className="w-8 h-8 text-[#1DB954]" />
           <span className="text-lg font-semibold text-white">Harmony Hub</span>
         </div>
       </div>
@@ -65,8 +65,8 @@ const Sidebar = () => {
                 className={`flex items-center px-4 py-3 rounded-lg transition-all duration-150 group
                   ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-[#282828] text-white'
+                      : 'text-[#B3B3B3] hover:bg-[#282828] hover:text-white'
                   }`}
               >
                 <Icon
@@ -79,22 +79,24 @@ const Sidebar = () => {
           })}
         </div>
       </nav>
-      <div className="p-4 border-t border-slate-800 relative">
+      <div className="p-4 border-t border-[#282828] relative">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors group"
+          className="w-full flex items-center gap-3 px-4 py-3 text-[#B3B3B3] hover:bg-[#282828] rounded-lg transition-colors group"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+          <div className="w-8 h-8 rounded-full bg-[#1DB954] flex items-center justify-center text-white font-semibold">
             {user?.email?.[0].toUpperCase() || 'A'}
           </div>
           <div className="flex-1 text-left">
             <div className="text-sm font-medium text-white">
               {user?.email?.split('@')[0] || 'Admin User'}
             </div>
-            <div className="text-xs truncate">{user?.email || 'admin@example.com'}</div>
+            <div className="text-xs truncate text-[#B3B3B3]">
+              {user?.email || 'admin@example.com'}
+            </div>
           </div>
           <ChevronUp
-            className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
+            className={`w-5 h-5 text-[#B3B3B3] transition-transform duration-200 ${
               isMenuOpen ? 'rotate-0' : 'rotate-180'
             }`}
           />
@@ -102,11 +104,11 @@ const Sidebar = () => {
 
         {/* User Menu */}
         {isMenuOpen && (
-          <div className="absolute bottom-full left-4 right-4 mb-2 bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden">
+          <div className="absolute bottom-full left-4 right-4 mb-2 bg-[#282828] rounded-lg shadow-lg border border-[#404040] overflow-hidden">
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center gap-2 px-4 py-3 text-slate-400 hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center gap-2 px-4 py-3 text-[#B3B3B3] hover:bg-[#404040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoggingOut ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

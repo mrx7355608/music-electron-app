@@ -12,7 +12,6 @@ export interface ReleaseFormData {
   distributor: string
   title: string
   genre: string
-  bundle: string
   original_producer: string
   status: 'online' | 'planned'
   created_at: string

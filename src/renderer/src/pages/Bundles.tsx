@@ -94,40 +94,37 @@ const Bundles: React.FC = () => {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black">
+      <div className="max-w-7xl mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
-            Bundles
-          </h1>
+          <h1 className="text-3xl font-bold text-white">Bundles</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white hover:cursor-pointer hover:bg-slate-800/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5" />
             <span>Create Bundle</span>
           </button>
         </div>
 
-        {/* Bundles List */}
-        <div className="bg-slate-800/30 rounded-xl border border-purple-500/20 overflow-hidden">
+        <div className="bg-[#181818] rounded-lg border border-[#282828] overflow-hidden">
           {isLoadingBundles ? (
             <div className="p-8 text-center">
-              <div className="flex justify-center items-center gap-2 text-purple-200">
+              <div className="flex justify-center items-center gap-2 text-[#B3B3B3]">
                 <Loader2 className="w-5 h-5 animate-spin" />
                 <span>Loading bundles...</span>
               </div>
             </div>
           ) : bundles.length === 0 ? (
-            <div className="p-8 text-center text-purple-200">No bundles found</div>
+            <div className="p-8 text-center text-[#B3B3B3]">No bundles found</div>
           ) : (
-            <div className="divide-y divide-purple-500/10">
+            <div className="divide-y divide-[#282828]">
               {bundles.map((bundle) => (
-                <div key={bundle.id} className="p-4 hover:bg-slate-800/50 transition-colors">
+                <div key={bundle.id} className="p-4 hover:bg-[#282828] transition-colors">
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-lg font-medium text-white">{bundle.name}</h3>
-                      <p className="text-sm text-purple-200">{bundle.total_releases} releases</p>
+                      <p className="text-sm text-[#B3B3B3]">{bundle.total_releases} releases</p>
                     </div>
                   </div>
                 </div>
@@ -137,99 +134,101 @@ const Bundles: React.FC = () => {
         </div>
 
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-slate-800 rounded-xl border border-purple-500/20 w-full max-w-2xl p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-white">Create New Bundle</h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-purple-200 mb-2">
-                    Bundle Name
-                  </label>
-                  <input
-                    type="text"
-                    value={bundleName}
-                    onChange={(e) => setBundleName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Enter bundle name"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-purple-200 mb-2">
-                    Select Releases
-                  </label>
-                  <div className="max-h-96 overflow-y-auto space-y-2">
-                    {isLoadingReleases ? (
-                      <div className="p-4 text-center">
-                        <div className="flex justify-center items-center gap-2 text-purple-200">
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          <span>Loading releases...</span>
-                        </div>
-                      </div>
-                    ) : releases.length === 0 ? (
-                      <div className="p-4 text-center text-purple-200">No releases found</div>
-                    ) : (
-                      releases.map((release) => {
-                        const isSelected = selectedReleases.some((r) => r.id === release.id)
-                        return (
-                          <div
-                            key={release.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-purple-500/20 hover:bg-slate-800/70 transition-colors"
-                          >
-                            <div>
-                              <div className="text-white font-medium">{release.title}</div>
-                              <div className="text-sm text-purple-200">
-                                {release.artist.real_name} • {release.label}
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => toggleReleaseSelection(release)}
-                              className={`p-2 rounded-lg transition-colors ${
-                                isSelected
-                                  ? 'bg-purple-500 text-white'
-                                  : 'bg-slate-700 text-purple-200 hover:bg-slate-600'
-                              }`}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-4">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] w-full max-w-2xl">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-white">Create New Bundle</h2>
                   <button
                     onClick={() => setShowModal(false)}
-                    disabled={isCreating}
-                    className="px-4 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-[#B3B3B3] hover:text-white transition-colors"
                   >
-                    Cancel
+                    <X className="w-5 h-5" />
                   </button>
-                  <button
-                    onClick={handleCreateBundle}
-                    disabled={!bundleName || selectedReleases.length === 0 || isCreating}
-                    className="px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {isCreating ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Creating...</span>
-                      </>
-                    ) : (
-                      <span>Create Bundle</span>
-                    )}
-                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#B3B3B3] mb-2">
+                      Bundle Name
+                    </label>
+                    <input
+                      type="text"
+                      value={bundleName}
+                      onChange={(e) => setBundleName(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
+                      placeholder="Enter bundle name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#B3B3B3] mb-2">
+                      Select Releases
+                    </label>
+                    <div className="max-h-96 overflow-y-auto space-y-2">
+                      {isLoadingReleases ? (
+                        <div className="p-4 text-center">
+                          <div className="flex justify-center items-center gap-2 text-[#B3B3B3]">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Loading releases...</span>
+                          </div>
+                        </div>
+                      ) : releases.length === 0 ? (
+                        <div className="p-4 text-center text-[#B3B3B3]">No releases found</div>
+                      ) : (
+                        releases.map((release) => {
+                          const isSelected = selectedReleases.some((r) => r.id === release.id)
+                          return (
+                            <div
+                              key={release.id}
+                              className="flex items-center justify-between p-3 rounded-lg bg-[#121212] border border-[#282828] hover:bg-[#282828] transition-colors"
+                            >
+                              <div>
+                                <div className="text-white font-medium">{release.title}</div>
+                                <div className="text-sm text-[#B3B3B3]">
+                                  {release.artist.real_name} • {release.label}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => toggleReleaseSelection(release)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                  isSelected
+                                    ? 'bg-[#1DB954] text-white'
+                                    : 'bg-[#282828] text-[#B3B3B3] hover:bg-[#404040]'
+                                }`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-4">
+                    <button
+                      onClick={() => setShowModal(false)}
+                      disabled={isCreating}
+                      className="px-4 py-2 rounded-lg bg-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#404040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleCreateBundle}
+                      disabled={!bundleName || selectedReleases.length === 0 || isCreating}
+                      className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isCreating ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Creating...</span>
+                        </>
+                      ) : (
+                        <span>Create Bundle</span>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

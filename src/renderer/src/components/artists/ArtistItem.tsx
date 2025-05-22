@@ -34,21 +34,21 @@ const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps)
           to={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-purple-400 hover:text-purple-300 transition-colors"
+          className="text-[#1DB954] hover:text-[#1ed760] transition-colors"
         >
           {icon}
         </Link>
       )
     }
 
-    return <span className="text-purple-400">{icon}</span>
+    return <span className="text-[#1DB954]">{icon}</span>
   }
 
   return (
     <>
       <div
         onClick={handleClick}
-        className="bg-slate-800/30 rounded-xl border border-purple-500/20 p-6 hover:bg-slate-800/50 transition-all duration-200 cursor-pointer"
+        className="bg-[#181818] rounded-lg border border-[#282828] p-6 hover:bg-[#282828] transition-colors cursor-pointer"
       >
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-semibold text-white">{artist.real_name}</h3>
@@ -56,14 +56,14 @@ const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps)
             <button
               onClick={() => setShowEditModal(true)}
               disabled={isDeleting}
-              className="p-1.5 rounded-lg bg-slate-700/50 text-purple-400 hover:bg-slate-700 hover:text-purple-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-lg bg-[#282828] text-[#1DB954] hover:bg-[#404040] hover:text-[#1ed760] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Edit2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => onDelete(artist.id)}
               disabled={isDeleting}
-              className="p-1.5 rounded-lg bg-slate-700/50 text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-lg bg-[#282828] text-red-500 hover:bg-[#404040] hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDeleting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -73,12 +73,12 @@ const ArtistItem = ({ artist, onDelete, onUpdate, isDeleting }: ArtistItemProps)
             </button>
           </div>
         </div>
-        <div className="space-y-2 text-purple-200 text-sm mb-4">
+        <div className="space-y-2 text-[#B3B3B3] text-sm mb-4">
           <p>Country: {artist.country_of_origin}</p>
           <p>Label: {artist.label}</p>
           <p>Distributor: {artist.distributor}</p>
         </div>
-        <p className="text-purple-200/80 text-sm mb-4 line-clamp-3">{artist.biography}</p>
+        <p className="text-[#B3B3B3] text-sm mb-4 line-clamp-3">{artist.biography}</p>
         <div className="flex gap-3">
           {renderSocialLink(artist.social_media_links.instagram, <Instagram className="w-5 h-5" />)}
           {renderSocialLink(artist.social_media_links.twitter, <Twitter className="w-5 h-5" />)}

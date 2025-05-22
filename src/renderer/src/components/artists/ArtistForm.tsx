@@ -74,123 +74,121 @@ const ArtistForm = ({ setShowAddModal, fetchArtists }: ArtistFormProps) => {
     <form onSubmit={handleSubmit} className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">Real Name</label>
+          <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Real Name</label>
           <input
             type="text"
             name="real_name"
             value={formData.real_name}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">
-            Country of Origin
-          </label>
+          <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Country of Origin</label>
           <input
             type="text"
             name="country_of_origin"
             value={formData.country_of_origin}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">Label</label>
+          <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Label</label>
           <input
             type="text"
             name="label"
             value={formData.label}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">Distributor</label>
+          <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Distributor</label>
           <input
             type="text"
             name="distributor"
             value={formData.distributor}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">Social Media Links</label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Social Media Links</label>
+        <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Instagram className="w-5 h-5 text-purple-400" />
+            <Instagram className="w-5 h-5 text-[#1DB954]" />
             <input
               type="url"
               name="social_instagram"
               value={formData.social_media_links.instagram || ''}
               onChange={handleInputChange}
               placeholder="Instagram URL"
-              className="flex-1 px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Twitter className="w-5 h-5 text-purple-400" />
+            <Twitter className="w-5 h-5 text-[#1DB954]" />
             <input
               type="url"
               name="social_twitter"
               value={formData.social_media_links.twitter || ''}
               onChange={handleInputChange}
               placeholder="Twitter URL"
-              className="flex-1 px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Facebook className="w-5 h-5 text-purple-400" />
+            <Facebook className="w-5 h-5 text-[#1DB954]" />
             <input
               type="url"
               name="social_facebook"
               value={formData.social_media_links.facebook || ''}
               onChange={handleInputChange}
               placeholder="Facebook URL"
-              className="flex-1 px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Youtube className="w-5 h-5 text-purple-400" />
+            <Youtube className="w-5 h-5 text-[#1DB954]" />
             <input
               type="url"
               name="social_youtube"
               value={formData.social_media_links.youtube || ''}
               onChange={handleInputChange}
               placeholder="YouTube URL"
-              className="flex-1 px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Music className="w-5 h-5 text-purple-400" />
+            <Music className="w-5 h-5 text-[#1DB954]" />
             <input
               type="url"
               name="social_spotify"
               value={formData.social_media_links.spotify || ''}
               onChange={handleInputChange}
               placeholder="Spotify URL"
-              className="flex-1 px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
             />
           </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">Biography</label>
+        <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Biography</label>
         <textarea
           name="biography"
           value={formData.biography}
           onChange={handleInputChange}
           required
           rows={4}
-          className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors resize-none"
         />
       </div>
 
@@ -198,14 +196,14 @@ const ArtistForm = ({ setShowAddModal, fetchArtists }: ArtistFormProps) => {
         <button
           type="button"
           onClick={() => setShowAddModal(false)}
-          className="px-6 py-2 rounded-lg bg-slate-700/50 text-white hover:bg-slate-700 transition-colors"
+          className="px-6 py-2 rounded-lg bg-[#282828] text-[#B3B3B3] hover:bg-[#404040] hover:text-white transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={submitting}
-          className="px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {submitting ? (
             <>

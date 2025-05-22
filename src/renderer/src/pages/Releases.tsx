@@ -23,7 +23,6 @@ const Releases = () => {
     distributor: '',
     title: '',
     genre: '',
-    bundle: '',
     original_producer: '',
     status: 'planned',
     created_at: ''
@@ -83,7 +82,6 @@ const Releases = () => {
         title: '',
         created_at: '',
         genre: '',
-        bundle: '',
         original_producer: '',
         status: 'planned'
       })
@@ -98,19 +96,17 @@ const Releases = () => {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-black">
+      <div className="max-w-4xl mx-auto p-8">
         <div className="flex items-center gap-3 mb-8">
-          <Music className="w-8 h-8 text-purple-400" />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
-            Add New Release
-          </h1>
+          <Music className="w-8 h-8 text-[#1DB954]" />
+          <h1 className="text-3xl font-bold text-white">Add New Release</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Artist
               </label>
               <select
@@ -118,13 +114,13 @@ const Releases = () => {
                 value={formData.artist_id}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70 appearance-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828] appearance-none cursor-pointer"
               >
-                <option value="" className="bg-slate-800">
+                <option value="" className="bg-[#121212]">
                   Select an artist
                 </option>
                 {artists.map((artist) => (
-                  <option key={artist.id} value={artist.id} className="bg-slate-800">
+                  <option key={artist.id} value={artist.id} className="bg-[#121212]">
                     {artist.real_name}
                   </option>
                 ))}
@@ -132,7 +128,7 @@ const Releases = () => {
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Label
               </label>
               <input
@@ -141,13 +137,13 @@ const Releases = () => {
                 value={formData.label}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828]"
                 placeholder="Enter label name"
               />
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Distributor
               </label>
               <input
@@ -156,14 +152,14 @@ const Releases = () => {
                 value={formData.distributor}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
-                placeholder="Enter distributor"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828]"
+                placeholder="Enter distributor name"
               />
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
-                Title
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
+                Release Title
               </label>
               <input
                 type="text"
@@ -171,27 +167,13 @@ const Releases = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828]"
                 placeholder="Enter release title"
               />
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
-                Created At
-              </label>
-              <input
-                type="date"
-                name="created_at"
-                value={formData.created_at}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
-              />
-            </div>
-
-            <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Genre
               </label>
               <select
@@ -199,13 +181,13 @@ const Releases = () => {
                 value={formData.genre}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70 appearance-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828] appearance-none cursor-pointer"
               >
-                <option value="" className="bg-slate-800">
+                <option value="" className="bg-[#121212]">
                   Select a genre
                 </option>
                 {genres.map((genre) => (
-                  <option key={genre} value={genre} className="bg-slate-800">
+                  <option key={genre} value={genre} className="bg-[#121212]">
                     {genre}
                   </option>
                 ))}
@@ -213,21 +195,7 @@ const Releases = () => {
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
-                Bundle
-              </label>
-              <input
-                type="text"
-                name="bundle"
-                value={formData.bundle}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
-                placeholder="Enter bundle name (optional)"
-              />
-            </div>
-
-            <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Original Producer
               </label>
               <input
@@ -236,13 +204,27 @@ const Releases = () => {
                 value={formData.original_producer}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70"
-                placeholder="Enter producer name"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828]"
+                placeholder="Enter original producer"
               />
             </div>
 
             <div className="group">
-              <label className="block text-sm font-medium text-purple-200 mb-2 group-hover:text-purple-400 transition-colors">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
+                Release Date
+              </label>
+              <input
+                type="date"
+                name="created_at"
+                value={formData.created_at}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828]"
+              />
+            </div>
+
+            <div className="group">
+              <label className="block text-sm font-medium text-[#B3B3B3] mb-2 group-hover:text-white transition-colors">
                 Status
               </label>
               <select
@@ -250,12 +232,12 @@ const Releases = () => {
                 value={formData.status}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 hover:bg-slate-800/70 appearance-none cursor-pointer"
+                className="w-full px-4 py-3 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors hover:bg-[#282828] appearance-none cursor-pointer"
               >
-                <option value="planned" className="bg-slate-800">
+                <option value="planned" className="bg-[#121212]">
                   Planned
                 </option>
-                <option value="online" className="bg-slate-800">
+                <option value="online" className="bg-[#121212]">
                   Online
                 </option>
               </select>
@@ -266,7 +248,7 @@ const Releases = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:from-purple-500 hover:to-pink-500 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-purple-500/20"
+              className="px-6 py-3 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -274,7 +256,7 @@ const Releases = () => {
                   <span>Adding Release...</span>
                 </>
               ) : (
-                'Add Release'
+                <span>Add Release</span>
               )}
             </button>
           </div>

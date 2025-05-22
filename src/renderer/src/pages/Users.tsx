@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { DbUser } from '../lib/types'
+import { Loader2, Plus, X } from 'lucide-react'
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<DbUser[]>([])
   const [loading, setLoading] = useState(true)
   const [isAdding, setIsAdding] = useState(false)
-
+  const [showAddModal, setShowAddModal] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
@@ -34,158 +35,189 @@ const Users: React.FC = () => {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
     setIsAdding(true)
+    setError(null)
 
     try {
-      // Fetch existing user session
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-      if (sessionError) throw sessionError
+      // First get old session
+      const { data: session } = await supabase.auth.getSession()
 
       // Then create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password
       })
-
       if (authError) throw authError
 
-      // Then set the old sessions back
-      await supabase.auth.setSession(sessionData.session!)
+      // Set old sessions back
+      await supabase.auth.setSession(session.session!)
 
-      // Lastly, create the user profile
-      const { error: profileError } = await supabase.from('users_profile').insert([
-        {
-          id: authData.user?.id,
-          name: formData.name,
-          email: formData.email
-        }
-      ])
+      // Then create the user profile
+      const { error: profileError } = await supabase.from('users_profile').insert({
+        id: authData.user?.id,
+        name: formData.name,
+        email: formData.email
+      })
 
       if (profileError) throw profileError
 
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        password: ''
-      })
-
-      // Refresh users list
-      fetchUsers()
+      // Reset form and refresh users list
+      setFormData({ name: '', email: '', password: '' })
+      setShowAddModal(false)
+      await fetchUsers()
     } catch (err) {
-      console.log(err)
-      setError(err instanceof Error ? err.message : 'Failed to create user')
+      setError(err instanceof Error ? err.message : 'Failed to add user')
     } finally {
       setIsAdding(false)
     }
   }
 
-  const handleDelete = async (userId: string): Promise<void> => {
+  const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase.from('users').delete().eq('id', userId)
-
+      const { error } = await supabase.from('users_profile').delete().eq('id', id)
       if (error) throw error
-      fetchUsers()
+      await fetchUsers()
     } catch (err) {
-      console.log(err)
       setError(err instanceof Error ? err.message : 'Failed to delete user')
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Users</h1>
-
-      {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* User Form */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Add New User</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              disabled={isAdding}
-            >
-              {isAdding ? 'Adding...' : 'Add User'}
-            </button>
-          </form>
+    <div className="min-h-screen bg-black">
+      <div className="max-w-4xl mx-auto p-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Users</h1>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add User
+          </button>
         </div>
 
-        {/* Users List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Existing Users</h2>
-          <div className="space-y-4">
-            {loading ? (
-              <p>Loading users...</p>
-            ) : users.length === 0 ? (
-              <p className="text-gray-500">No users found</p>
-            ) : (
-              users.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div>
-                    <h3 className="font-semibold">{user.name}</h3>
-                    <p className="text-sm text-gray-600">{user.email}</p>
+        {error && (
+          <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500">
+            {error}
+          </div>
+        )}
+
+        <div className="bg-[#181818] rounded-lg border border-[#282828] overflow-hidden">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="flex justify-center items-center gap-2 text-[#B3B3B3]">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Loading users...</span>
+              </div>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="p-8 text-center text-[#B3B3B3]">No users found</div>
+          ) : (
+            <div className="divide-y divide-[#282828]">
+              {users.map((user) => (
+                <div key={user.id} className="p-4 hover:bg-[#282828] transition-colors">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-lg font-medium text-white">{user.name}</h3>
+                      <p className="text-sm text-[#B3B3B3]">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] w-full max-w-md">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-white">Add New User</h2>
                   <button
-                    onClick={() => handleDelete(user.id)}
-                    className="text-red-600 hover:text-red-800"
+                    onClick={() => setShowAddModal(false)}
+                    className="text-[#B3B3B3] hover:text-white transition-colors"
                   >
-                    Delete
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
-              ))
-            )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
+                      placeholder="Enter name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
+                      placeholder="Enter email"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#B3B3B3] mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
+                      placeholder="Enter password"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-4 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      disabled={isAdding}
+                      className="px-4 py-2 rounded-lg bg-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#404040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isAdding}
+                      className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isAdding ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Adding...</span>
+                        </>
+                      ) : (
+                        <span>Add User</span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

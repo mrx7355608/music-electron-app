@@ -54,7 +54,7 @@ const ArtistDetails = () => {
           to={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200 hover:bg-slate-600 hover:text-white transition-colors"
+          className="flex items-center gap-2 p-3 rounded-lg bg-[#282828] text-[#B3B3B3] hover:bg-[#404040] hover:text-white transition-colors"
         >
           {icon}
           <span>{label}</span>
@@ -63,7 +63,7 @@ const ArtistDetails = () => {
     }
 
     return (
-      <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-700 text-purple-200">
+      <div className="flex items-center gap-2 p-3 rounded-lg bg-[#282828] text-[#B3B3B3]">
         {icon}
         <span>{label}</span>
       </div>
@@ -72,10 +72,10 @@ const ArtistDetails = () => {
 
   if (loading) {
     return (
-      <div className="p-8 bg-slate-900 min-h-screen">
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen bg-black">
+        <div className="max-w-5xl mx-auto p-8">
           <div className="flex justify-center items-center py-12">
-            <div className="flex items-center gap-2 text-purple-200">
+            <div className="flex items-center gap-2 text-[#B3B3B3]">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span>Loading artist details...</span>
             </div>
@@ -87,32 +87,30 @@ const ArtistDetails = () => {
 
   if (!artist) {
     return (
-      <div className="p-8 bg-slate-900 min-h-screen">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center py-12 text-purple-200">Artist not found</div>
+      <div className="min-h-screen bg-black">
+        <div className="max-w-5xl mx-auto p-8">
+          <div className="text-center py-12 text-[#B3B3B3]">Artist not found</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-8 bg-slate-900 min-h-screen">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-black">
+      <div className="max-w-5xl mx-auto p-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/artists')}
-              className="p-2 rounded-lg bg-slate-800 text-purple-200 hover:bg-slate-700 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-[#282828] text-[#B3B3B3] hover:bg-[#404040] hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
-              {artist.real_name}
-            </h1>
+            <h1 className="text-3xl font-bold text-white">{artist.real_name}</h1>
           </div>
           <button
             onClick={() => setShowEditModal(true)}
-            className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-500 transition-colors flex items-center gap-2"
+            className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2"
           >
             <Edit2 className="w-4 h-4" />
             Edit Artist
@@ -122,37 +120,37 @@ const ArtistDetails = () => {
         <div className="grid grid-cols-3 gap-8">
           {/* Left Column - Basic Info */}
           <div className="col-span-1 space-y-6">
-            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Basic Information</h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Globe className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <Globe className="w-5 h-5 text-[#1DB954] mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-medium text-purple-200">Country of Origin</h3>
-                    <p className="text-slate-200">{artist.country_of_origin}</p>
+                    <h3 className="text-sm font-medium text-[#B3B3B3]">Country of Origin</h3>
+                    <p className="text-white">{artist.country_of_origin}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Building2 className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <Building2 className="w-5 h-5 text-[#1DB954] mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-medium text-purple-200">Label</h3>
-                    <p className="text-slate-200">{artist.label}</p>
+                    <h3 className="text-sm font-medium text-[#B3B3B3]">Label</h3>
+                    <p className="text-white">{artist.label}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Truck className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <Truck className="w-5 h-5 text-[#1DB954] mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-medium text-purple-200">Distributor</h3>
-                    <p className="text-slate-200">{artist.distributor}</p>
+                    <h3 className="text-sm font-medium text-[#B3B3B3]">Distributor</h3>
+                    <p className="text-white">{artist.distributor}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Social Media */}
-            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Social Media</h2>
               <div className="grid grid-cols-2 gap-4">
                 {renderSocialLink(
@@ -186,10 +184,10 @@ const ArtistDetails = () => {
 
           {/* Right Column - Biography */}
           <div className="col-span-2">
-            <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 shadow-lg">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Biography</h2>
               <div className="prose prose-invert max-w-none">
-                <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+                <p className="text-[#B3B3B3] whitespace-pre-wrap leading-relaxed">
                   {artist.biography}
                 </p>
               </div>

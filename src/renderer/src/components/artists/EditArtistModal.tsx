@@ -59,10 +59,10 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-800 rounded-xl border border-purple-500/20 w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <div className="flex justify-between items-center p-6 border-b border-purple-500/20">
+      <div className="bg-[#181818] rounded-lg border border-[#282828] w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div className="flex justify-between items-center p-6 border-b border-[#282828]">
           <h2 className="text-xl font-semibold text-white">Edit Artist</h2>
-          <button onClick={onClose} className="text-purple-200 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-[#B3B3B3] hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -75,7 +75,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                 <div>
                   <label
                     htmlFor="real_name"
-                    className="block text-sm font-medium text-purple-200 mb-1"
+                    className="block text-sm font-medium text-[#B3B3B3] mb-1"
                   >
                     Real Name
                   </label>
@@ -86,14 +86,14 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     value={formData.real_name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="country_of_origin"
-                    className="block text-sm font-medium text-purple-200 mb-1"
+                    className="block text-sm font-medium text-[#B3B3B3] mb-1"
                   >
                     Country of Origin
                   </label>
@@ -104,12 +104,12 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     value={formData.country_of_origin}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="label" className="block text-sm font-medium text-purple-200 mb-1">
+                  <label htmlFor="label" className="block text-sm font-medium text-[#B3B3B3] mb-1">
                     Label
                   </label>
                   <input
@@ -119,14 +119,14 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     value={formData.label}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="distributor"
-                    className="block text-sm font-medium text-purple-200 mb-1"
+                    className="block text-sm font-medium text-[#B3B3B3] mb-1"
                   >
                     Distributor
                   </label>
@@ -137,7 +137,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     value={formData.distributor}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
                 </div>
               </div>
@@ -145,7 +145,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
               {/* Right Column */}
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-purple-200 mb-2">
+                  <label className="block text-sm font-medium text-[#B3B3B3] mb-2">
                     Social Media Links
                   </label>
                   <div className="space-y-3">
@@ -155,7 +155,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                       value={formData.social_media_links.instagram}
                       onChange={handleInputChange}
                       placeholder="Instagram URL"
-                      className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                     />
                     <input
                       type="url"
@@ -163,7 +163,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                       value={formData.social_media_links.twitter}
                       onChange={handleInputChange}
                       placeholder="Twitter URL"
-                      className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                     />
                     <input
                       type="url"
@@ -171,7 +171,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                       value={formData.social_media_links.facebook}
                       onChange={handleInputChange}
                       placeholder="Facebook URL"
-                      className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                     />
                     <input
                       type="url"
@@ -179,7 +179,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                       value={formData.social_media_links.youtube}
                       onChange={handleInputChange}
                       placeholder="YouTube URL"
-                      className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                     />
                     <input
                       type="url"
@@ -187,7 +187,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                       value={formData.social_media_links.spotify}
                       onChange={handleInputChange}
                       placeholder="Spotify URL"
-                      className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                     />
                   </div>
                 </div>
@@ -195,7 +195,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                 <div>
                   <label
                     htmlFor="biography"
-                    className="block text-sm font-medium text-purple-200 mb-1"
+                    className="block text-sm font-medium text-[#B3B3B3] mb-1"
                   >
                     Biography
                   </label>
@@ -206,7 +206,7 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     onChange={handleInputChange}
                     required
                     rows={4}
-                    className="w-full px-4 py-2 rounded-lg bg-slate-700/50 border border-purple-500/20 text-white placeholder-purple-200/50 focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
                 </div>
               </div>
@@ -214,19 +214,19 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
           </div>
 
           {/* Fixed Footer */}
-          <div className="p-6 border-t border-purple-500/20 bg-slate-800/50 backdrop-blur-sm">
+          <div className="p-6 border-t border-[#282828] bg-[#181818]">
             <div className="flex justify-end gap-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2.5 rounded-lg bg-slate-700/50 text-purple-200 hover:bg-slate-700 hover:text-white transition-colors"
+                className="px-6 py-2.5 rounded-lg bg-[#282828] text-[#B3B3B3] hover:bg-[#404040] hover:text-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <>

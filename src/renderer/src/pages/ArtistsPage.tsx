@@ -43,15 +43,13 @@ const Artists = () => {
   }, [])
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black">
+      <div className="max-w-7xl mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-purple-400 bg-clip-text text-transparent">
-            Artists
-          </h1>
+          <h1 className="text-3xl font-bold text-white">Artists</h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
             Add Artist
@@ -62,13 +60,13 @@ const Artists = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
             <div className="col-span-full flex justify-center items-center py-12">
-              <div className="flex items-center gap-2 text-purple-200">
+              <div className="flex items-center gap-2 text-[#B3B3B3]">
                 <Loader2 className="w-5 h-5 animate-spin" />
                 <span>Loading artists...</span>
               </div>
             </div>
           ) : artists.length === 0 ? (
-            <div className="col-span-full text-center py-12 text-purple-200">No artists found</div>
+            <div className="col-span-full text-center py-12 text-[#B3B3B3]">No artists found</div>
           ) : (
             artists.map((artist) => (
               <ArtistItem
@@ -85,12 +83,12 @@ const Artists = () => {
         {/* Show artist form */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-800 rounded-xl border border-purple-500/20 w-full max-w-2xl">
-              <div className="flex justify-between items-center p-6 border-b border-purple-500/20">
+            <div className="bg-[#181818] rounded-lg border border-[#282828] w-full max-w-2xl">
+              <div className="flex justify-between items-center p-6 border-b border-[#282828]">
                 <h2 className="text-xl font-semibold text-white">Add New Artist</h2>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="text-purple-200 hover:text-white transition-colors"
+                  className="text-[#B3B3B3] hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>

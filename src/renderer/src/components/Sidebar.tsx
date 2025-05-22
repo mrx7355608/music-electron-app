@@ -12,7 +12,6 @@ import {
   ChevronUp,
   Loader2,
   Disc,
-  Home,
   ListMusic
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'

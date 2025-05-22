@@ -82,3 +82,14 @@ export interface Bundle {
   name: string
   total_releases: number
 }
+
+export interface Track {
+  id: string
+  title: string
+  artist_id: string
+  duration: number
+  created_at: string
+  artist: {
+    real_name: string
+  }
+}

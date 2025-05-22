@@ -1,16 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { Artist } from '@renderer/lib/types'
-
-interface Track {
-  id: number
-  title: string
-  artist_id: number
-  duration: number
-  created_at: string
-  updated_at: string
-}
+import { Artist, Track } from '@renderer/lib/types'
 
 const Tracks = () => {
   const [tracks, setTracks] = useState<Track[]>([])
@@ -32,7 +23,10 @@ const Tracks = () => {
     try {
       setIsLoading(true)
       const [tracksResponse, artistsResponse] = await Promise.all([
-        supabase.from('tracks').select('*').order('created_at', { ascending: false }),
+        supabase
+          .from('tracks')
+          .select('*, artist:artist_id(real_name)')
+          .order('created_at', { ascending: false }),
         supabase.from('artists').select('*').order('real_name')
       ])
 
@@ -119,7 +113,7 @@ const Tracks = () => {
                 {tracks.map((track) => (
                   <tr key={track.id} className="border-b border-[#282828] hover:bg-[#282828]">
                     <td className="px-6 py-4 text-white">{track.title}</td>
-                    <td className="px-6 py-4 text-white">My Artist</td>
+                    <td className="px-6 py-4 text-white">{track.artist.real_name || 'N/A'}</td>
                     <td className="px-6 py-4 text-white">{formatDuration(track.duration)}</td>
                     <td className="px-6 py-4 text-white">{formatDate(track.created_at)}</td>
                   </tr>

@@ -11,7 +11,9 @@ import {
   LogOut,
   ChevronUp,
   Loader2,
-  Disc
+  Disc,
+  Home,
+  ListMusic
 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
@@ -30,7 +32,8 @@ const Sidebar = () => {
     { path: '/bundles', label: 'Bundles', icon: Package },
     { path: '/releases', label: 'Releases', icon: Disc },
     { path: '/users', label: 'Users', icon: Users },
-    { path: '/settings', label: 'Settings', icon: Settings }
+    { path: '/settings', label: 'Settings', icon: Settings },
+    { path: '/tracks', label: 'Tracks', icon: ListMusic }
   ]
 
   const handleLogout = async (): Promise<void> => {

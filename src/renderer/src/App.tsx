@@ -11,6 +11,7 @@ import Bundles from './pages/Bundles'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
 import Releases from './pages/Releases'
+import Tracks from './pages/Tracks'
 import { SettingsProvider } from './providers/SettingsProvider'
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -103,6 +104,16 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <AppLayout>
                     <Settings />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tracks"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Tracks />
                   </AppLayout>
                 </ProtectedRoute>
               }

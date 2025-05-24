@@ -56,7 +56,6 @@ const Tracks = () => {
 
       if (settings.show_uncategorized_songs) {
         const uncategorizedSongs = await fetchUncategorizedSongs() // get all songs with no playlist_id (null)
-        console.log(uncategorizedSongs)
         setUncategorizedSongs(uncategorizedSongs.map((d) => d.track_id))
       }
     } catch (error) {
@@ -94,7 +93,7 @@ const Tracks = () => {
     e.preventDefault()
     try {
       setIsSubmitting(true)
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('tracks')
         .insert({
           title: formData.title,
@@ -106,14 +105,8 @@ const Tracks = () => {
 
       if (error) throw error
 
-      // Add track to uncategorized playlist
-      const { error: updateError } = await supabase
-        .from('playlists_tracks')
-        .insert({ track_id: data.id, playlist_id: null })
+      await loadData() // refresh the data
 
-      if (updateError) throw updateError
-
-      await loadData()
       setIsModalOpen(false)
       setFormData({ title: '', artist_id: '', duration: '' })
     } catch (error) {

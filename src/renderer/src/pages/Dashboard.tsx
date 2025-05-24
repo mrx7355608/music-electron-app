@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { supabase } from '../lib/supabase'
-import { Search, Filter, ChevronLeft, ChevronRight, Loader2, Table, FileText } from 'lucide-react'
-import { Release } from '../lib/types'
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Table,
+  FileText,
+  Plus,
+  Minus
+} from 'lucide-react'
+import { Release, Track } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { saveAs } from 'file-saver'
 import { unparse } from 'papaparse'
@@ -10,7 +20,6 @@ import * as XLSX from 'xlsx'
 const ITEMS_PER_PAGE = 10
 
 const Dashboard = () => {
-  const navigate = useNavigate()
   const [releases, setReleases] = useState<Release[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -393,6 +402,7 @@ const Dashboard = () => {
         <div className="bg-[#181818] rounded-lg border border-[#282828] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
+              {/* Header */}
               <thead>
                 <tr className="bg-[#121212]">
                   <th className="px-6 py-4 text-left text-sm font-medium text-[#B3B3B3]">
@@ -416,6 +426,8 @@ const Dashboard = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium text-[#B3B3B3]">Status</th>
                 </tr>
               </thead>
+
+              {/* Body */}
               <tbody className="divide-y divide-[#282828]">
                 {loading ? (
                   <tr>
@@ -433,42 +445,15 @@ const Dashboard = () => {
                     </td>
                   </tr>
                 ) : (
-                  releases.map((release) => (
-                    <tr key={release.id} className="hover:bg-[#282828] transition-colors">
-                      <td className="px-6 py-4 text-sm">
-                        <button
-                          onClick={() => navigate(`/artists/${release.artist.id}`)}
-                          className="hover:cursor-pointer text-white hover:text-[#1DB954] transition-colors"
-                        >
-                          {release.artist.real_name}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-white">{release.label}</td>
-                      <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
-                      <td className="px-6 py-4 text-sm text-white">
-                        <div className="space-y-2">
-                          {release.tracks?.map((track) => (
-                            <div key={track.id} className="text-white">
-                              {track.title},
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-white">
-                        {new Date(release.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
-                      <td className="px-6 py-4 text-sm text-white">
-                        {release.bundle?.name || '-'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
-                      <td className="px-6 py-4 text-sm">
-                        <span className="font-medium text-white">
-                          {release.status.toUpperCase()}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                  releases.map((release) => {
+                    return (
+                      <ReleaseRow
+                        key={release.id}
+                        release={release}
+                        tracks={release.tracks || []}
+                      />
+                    )
+                  })
                 )}
               </tbody>
             </table>
@@ -476,29 +461,149 @@ const Dashboard = () => {
         </div>
 
         {!loading && totalPages > 1 && (
-          <div className="flex justify-between items-center mt-6">
-            <div className="text-sm text-[#B3B3B3]">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-              {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} releases
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalCount={totalCount}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
         )}
+      </div>
+    </div>
+  )
+}
+
+function ReleaseRow({ release, tracks }: { release: Release; tracks: Partial<Track>[] }) {
+  const navigate = useNavigate()
+  const [isExpanded, setIsExpanded] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_expandedReleases, setExpandedReleases] = useState<Set<string>>(new Set())
+  const hasMultipleTracks = tracks.length > 1
+
+  const toggleRelease = (releaseId: string) => {
+    setExpandedReleases((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(releaseId)) {
+        newSet.delete(releaseId)
+      } else {
+        newSet.add(releaseId)
+      }
+      return newSet
+    })
+    setIsExpanded(!isExpanded)
+  }
+
+  return (
+    <>
+      <tr key={release.id} className="hover:bg-[#282828] transition-colors">
+        <td className="px-6 py-4 text-sm">
+          <button
+            onClick={() => navigate(`/artists/${release.artist.id}`)}
+            className="hover:cursor-pointer text-white hover:text-[#1DB954] transition-colors"
+          >
+            {release.artist.real_name}
+          </button>
+        </td>
+        <td className="px-6 py-4 text-sm text-white">{release.label}</td>
+        <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
+        <td className="px-6 py-4 text-sm text-white">
+          <div className="flex items-center gap-2">
+            {tracks[0]?.title}
+            {hasMultipleTracks && (
+              <button
+                onClick={() => toggleRelease(release.id)}
+                className="text-[#B3B3B3] hover:text-white transition-colors p-1 rounded-full hover:bg-[#282828]"
+              >
+                {isExpanded ? (
+                  <Minus className="w-6 h-6 rounded-full bg-[#2a2a2a] p-1 border border-gray-500" />
+                ) : (
+                  <Plus className="w-6 h-6 rounded-full bg-[#2a2a2a] p-1 border border-gray-500" />
+                )}
+              </button>
+            )}
+          </div>
+        </td>
+        <td className="px-6 py-4 text-sm text-white">
+          {new Date(release.created_at).toLocaleDateString()}
+        </td>
+        <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
+        <td className="px-6 py-4 text-sm text-white">{release.bundle?.name || '-'}</td>
+        <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
+        <td className="px-6 py-4 text-sm">
+          <span className="font-medium text-white">{release.status.toUpperCase()}</span>
+        </td>
+      </tr>
+      {isExpanded &&
+        tracks
+          .slice(1)
+          .map((track) => (
+            <ExpandedRelease key={`${release.id}-${track.id}`} release={release} track={track} />
+          ))}
+    </>
+  )
+}
+
+function ExpandedRelease({ release, track }: { release: Release; track: Partial<Track> }) {
+  const navigate = useNavigate()
+
+  return (
+    <tr key={`${release.id}-${track.id}`} className={`bg-zinc-950`}>
+      <td className="px-6 py-4 text-sm">
+        <button
+          onClick={() => navigate(`/artists/${release.artist.id}`)}
+          className="hover:cursor-pointer text-white hover:text-[#1DB954] transition-colors"
+        >
+          {release.artist.real_name}
+        </button>
+      </td>
+      <td className="px-6 py-4 text-sm text-white">{release.label}</td>
+      <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
+      <td className="px-6 py-4 text-sm text-white pl-8">{track.title}</td>
+      <td className="px-6 py-4 text-sm text-white">
+        {new Date(release.created_at).toLocaleDateString()}
+      </td>
+      <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
+      <td className="px-6 py-4 text-sm text-white">{release.bundle?.name || '-'}</td>
+      <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
+      <td className="px-6 py-4 text-sm">
+        <span className="font-medium text-white">{release.status.toUpperCase()}</span>
+      </td>
+    </tr>
+  )
+}
+
+function Pagination({
+  currentPage,
+  totalCount,
+  totalPages,
+  setCurrentPage
+}: {
+  currentPage: number
+  totalCount: number
+  totalPages: number
+  setCurrentPage: Dispatch<SetStateAction<number>>
+}) {
+  return (
+    <div className="flex justify-between items-center mt-6">
+      <div className="text-sm text-[#B3B3B3]">
+        Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
+        {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} releases
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
       </div>
     </div>
   )

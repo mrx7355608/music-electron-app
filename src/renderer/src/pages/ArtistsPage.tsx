@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Plus, Loader2, X } from 'lucide-react'
+import { Plus, Loader2, X, List, Grid } from 'lucide-react'
 import { Artist } from '../lib/types'
 import ArtistItem from '@renderer/components/artists/ArtistItem'
 import ArtistForm from '@renderer/components/artists/ArtistForm'
@@ -10,6 +10,7 @@ const Artists = () => {
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [deletingArtistId, setDeletingArtistId] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const fetchArtists = async () => {
     setLoading(true)
@@ -47,17 +48,47 @@ const Artists = () => {
       <div className="max-w-7xl mx-auto p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Artists</h1>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Artist
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-[#282828] rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-[#1DB954] text-white'
+                    : 'text-[#B3B3B3] hover:text-white'
+                }`}
+              >
+                <Grid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-[#1DB954] text-white'
+                    : 'text-[#B3B3B3] hover:text-white'
+                }`}
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 rounded-lg bg-[#1DB954] text-white hover:bg-[#1ed760] transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Add Artist
+            </button>
+          </div>
         </div>
 
         {/* Show artists list */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className={
+            viewMode === 'grid'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+              : 'space-y-4'
+          }
+        >
           {loading ? (
             <div className="col-span-full flex justify-center items-center py-12">
               <div className="flex items-center gap-2 text-[#B3B3B3]">
@@ -75,6 +106,7 @@ const Artists = () => {
                 onDelete={handleDelete}
                 onUpdate={fetchArtists}
                 isDeleting={deletingArtistId === artist.id}
+                viewMode={viewMode}
               />
             ))
           )}

@@ -261,7 +261,21 @@ const PlaylistDetails = () => {
             <div className="flex items-center gap-4 text-[#B3B3B3] mb-6">
               <div className="flex items-center gap-2">
                 <Music className="w-5 h-5" />
-                <span>{playlist.type}</span>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    playlist.type.toLowerCase() === 'youtube'
+                      ? 'bg-red-500/20 text-red-500'
+                      : playlist.type.toLowerCase() === 'spotify editorial'
+                        ? 'bg-green-500/20 text-green-500'
+                        : playlist.type.toLowerCase() === 'spotify user'
+                          ? 'bg-orange-500/20 text-orange-500'
+                          : playlist.type.toLowerCase() === 'internal promo'
+                            ? 'bg-pink-500/20 text-pink-500'
+                            : 'bg-[#282828] text-[#B3B3B3]'
+                  }`}
+                >
+                  {playlist.type}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />

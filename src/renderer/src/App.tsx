@@ -14,13 +14,22 @@ import Settings from './pages/Settings'
 import Releases from './pages/Releases'
 import Tracks from './pages/Tracks'
 import { SettingsProvider } from './providers/SettingsProvider'
+import { useState } from 'react'
 
-const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="flex bg-slate-50">
-    <Sidebar />
-    <main className="flex-1 ml-64">{children}</main>
-  </div>
-)
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+
+  return (
+    <div className="flex bg-slate-50">
+      <Sidebar onCollapse={setIsSidebarCollapsed} />
+      <main
+        className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}
+      >
+        {children}
+      </main>
+    </div>
+  )
+}
 
 const App: React.FC = () => {
   return (

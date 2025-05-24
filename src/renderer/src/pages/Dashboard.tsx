@@ -1,21 +1,13 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import {
-  Search,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Table,
-  FileText,
-  Plus,
-  Minus
-} from 'lucide-react'
-import { Release, Track } from '../lib/types'
-import { useNavigate } from 'react-router-dom'
+import { Search, Filter, Loader2, Table, FileText } from 'lucide-react'
+import { Release } from '../lib/types'
 import { saveAs } from 'file-saver'
 import { unparse } from 'papaparse'
 import * as XLSX from 'xlsx'
+import Filters from '@renderer/components/dashboard/Filters'
+import ReleaseRow from '@renderer/components/dashboard/ReleaseRow'
+import Pagination from '@renderer/components/dashboard/Pagination'
 
 const ITEMS_PER_PAGE = 10
 
@@ -121,11 +113,6 @@ const Dashboard = () => {
   }, [currentPage, searchTerm, filters])
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
-
-  const handleFilterChange = (key: string, value: string | boolean) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-    setCurrentPage(1) // Reset to first page when filters change
-  }
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
@@ -267,136 +254,7 @@ const Dashboard = () => {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-4 rounded-lg bg-[#181818] border border-[#282828]">
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Artist Name</label>
-              <input
-                type="text"
-                value={filters.artist_name}
-                onChange={(e) => handleFilterChange('artist_name', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Label</label>
-              <input
-                type="text"
-                value={filters.label}
-                onChange={(e) => handleFilterChange('label', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Release Title</label>
-              <input
-                type="text"
-                value={filters.title}
-                onChange={(e) => handleFilterChange('title', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Date</label>
-              <select
-                value={filters.date}
-                onChange={(e) => handleFilterChange('date', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
-              >
-                <option value="">Select Day</option>
-                {Array.from({ length: 30 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Month</label>
-              <select
-                value={filters.month}
-                onChange={(e) => handleFilterChange('month', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
-              >
-                <option value="">Select Month</option>
-                {Array.from({ length: 12 }, (_, i) => {
-                  const month = (i + 1).toString().padStart(2, '0')
-                  return (
-                    <option key={month} value={month}>
-                      {new Date(2000, i).toLocaleString('default', { month: 'long' })}
-                    </option>
-                  )
-                })}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Year</label>
-              <select
-                value={filters.year}
-                onChange={(e) => handleFilterChange('year', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
-              >
-                <option value="">Select Year</option>
-                {Array.from({ length: 5 }, (_, i) => {
-                  const year = new Date().getFullYear() - i
-                  return (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  )
-                })}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Genre</label>
-              <select
-                value={filters.genre}
-                onChange={(e) => handleFilterChange('genre', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
-              >
-                <option value="">Select Genre</option>
-                <option value="Pop">Pop</option>
-                <option value="K-Pop">K-Pop</option>
-                <option value="Rap">Rap</option>
-                <option value="Rock">Rock</option>
-                <option value="Hip Hop">Hip Hop</option>
-                <option value="Electronic">Electronic</option>
-                <option value="Classical">Classical</option>
-                <option value="Indie">Indie</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#B3B3B3] mb-2">Status</label>
-              <select
-                value={filters.status}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
-              >
-                <option value="">Select Status</option>
-                <option value="online">Online</option>
-                <option value="planned">Planned</option>
-              </select>
-            </div>
-            <div className="col-span-2 flex gap-4">
-              <label className="flex items-center gap-2 text-[#B3B3B3]">
-                <input
-                  type="checkbox"
-                  checked={filters.recently_added}
-                  onChange={(e) => handleFilterChange('recently_added', e.target.checked)}
-                  className="rounded border-[#282828] text-[#1DB954] focus:ring-[#1DB954]"
-                />
-                Recently Added
-              </label>
-              <label className="flex items-center gap-2 text-[#B3B3B3]">
-                <input
-                  type="checkbox"
-                  checked={filters.new_artist}
-                  onChange={(e) => handleFilterChange('new_artist', e.target.checked)}
-                  className="rounded border-[#282828] text-[#1DB954] focus:ring-[#1DB954]"
-                />
-                New Artist
-              </label>
-            </div>
-          </div>
+          <Filters filters={filters} setFilters={setFilters} setCurrentPage={setCurrentPage} />
         )}
 
         <div className="bg-[#181818] rounded-lg border border-[#282828] overflow-hidden">
@@ -468,142 +326,6 @@ const Dashboard = () => {
             setCurrentPage={setCurrentPage}
           />
         )}
-      </div>
-    </div>
-  )
-}
-
-function ReleaseRow({ release, tracks }: { release: Release; tracks: Partial<Track>[] }) {
-  const navigate = useNavigate()
-  const [isExpanded, setIsExpanded] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_expandedReleases, setExpandedReleases] = useState<Set<string>>(new Set())
-  const hasMultipleTracks = tracks.length > 1
-
-  const toggleRelease = (releaseId: string) => {
-    setExpandedReleases((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(releaseId)) {
-        newSet.delete(releaseId)
-      } else {
-        newSet.add(releaseId)
-      }
-      return newSet
-    })
-    setIsExpanded(!isExpanded)
-  }
-
-  return (
-    <>
-      <tr key={release.id} className="hover:bg-[#282828] transition-colors">
-        <td className="px-6 py-4 text-sm">
-          <button
-            onClick={() => navigate(`/artists/${release.artist.id}`)}
-            className="hover:cursor-pointer text-white hover:text-[#1DB954] transition-colors"
-          >
-            {release.artist.real_name}
-          </button>
-        </td>
-        <td className="px-6 py-4 text-sm text-white">{release.label}</td>
-        <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
-        <td className="px-6 py-4 text-sm text-white">
-          <div className="flex items-center gap-2">
-            {tracks[0]?.title}
-            {hasMultipleTracks && (
-              <button
-                onClick={() => toggleRelease(release.id)}
-                className="text-[#B3B3B3] hover:text-white transition-colors p-1 rounded-full hover:bg-[#282828]"
-              >
-                {isExpanded ? (
-                  <Minus className="w-6 h-6 rounded-full bg-[#2a2a2a] p-1 border border-gray-500" />
-                ) : (
-                  <Plus className="w-6 h-6 rounded-full bg-[#2a2a2a] p-1 border border-gray-500" />
-                )}
-              </button>
-            )}
-          </div>
-        </td>
-        <td className="px-6 py-4 text-sm text-white">
-          {new Date(release.created_at).toLocaleDateString()}
-        </td>
-        <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
-        <td className="px-6 py-4 text-sm text-white">{release.bundle?.name || '-'}</td>
-        <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
-        <td className="px-6 py-4 text-sm">
-          <span className="font-medium text-white">{release.status.toUpperCase()}</span>
-        </td>
-      </tr>
-      {isExpanded &&
-        tracks
-          .slice(1)
-          .map((track) => (
-            <ExpandedRelease key={`${release.id}-${track.id}`} release={release} track={track} />
-          ))}
-    </>
-  )
-}
-
-function ExpandedRelease({ release, track }: { release: Release; track: Partial<Track> }) {
-  const navigate = useNavigate()
-
-  return (
-    <tr key={`${release.id}-${track.id}`} className={`bg-zinc-950`}>
-      <td className="px-6 py-4 text-sm">
-        <button
-          onClick={() => navigate(`/artists/${release.artist.id}`)}
-          className="hover:cursor-pointer text-white hover:text-[#1DB954] transition-colors"
-        >
-          {release.artist.real_name}
-        </button>
-      </td>
-      <td className="px-6 py-4 text-sm text-white">{release.label}</td>
-      <td className="px-6 py-4 text-sm text-white">{release.distributor}</td>
-      <td className="px-6 py-4 text-sm text-white pl-8">{track.title}</td>
-      <td className="px-6 py-4 text-sm text-white">
-        {new Date(release.created_at).toLocaleDateString()}
-      </td>
-      <td className="px-6 py-4 text-sm text-white">{release.genre}</td>
-      <td className="px-6 py-4 text-sm text-white">{release.bundle?.name || '-'}</td>
-      <td className="px-6 py-4 text-sm text-white">{release.original_producer}</td>
-      <td className="px-6 py-4 text-sm">
-        <span className="font-medium text-white">{release.status.toUpperCase()}</span>
-      </td>
-    </tr>
-  )
-}
-
-function Pagination({
-  currentPage,
-  totalCount,
-  totalPages,
-  setCurrentPage
-}: {
-  currentPage: number
-  totalCount: number
-  totalPages: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-}) {
-  return (
-    <div className="flex justify-between items-center mt-6">
-      <div className="text-sm text-[#B3B3B3]">
-        Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-        {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount} releases
-      </div>
-      <div className="flex gap-2">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 rounded-lg bg-[#181818] border border-[#282828] text-[#B3B3B3] hover:text-white hover:bg-[#282828] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
       </div>
     </div>
   )

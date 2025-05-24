@@ -46,6 +46,7 @@ export interface ArtistFormData {
   country_of_origin: string
   label: string
   distributor: string
+  spotify_claimed_status: 'yes' | 'no' | 'pending'
   social_media_links: {
     instagram?: string
     twitter?: string
@@ -62,6 +63,8 @@ export interface Artist {
   country_of_origin: string
   label: string
   distributor: string
+  biography: string
+  spotify_claimed_status: 'yes' | 'no' | 'pending'
   social_media_links: {
     instagram?: string
     twitter?: string
@@ -69,7 +72,6 @@ export interface Artist {
     youtube?: string
     spotify?: string
   }
-  biography: string
   created_by: string
 }
 

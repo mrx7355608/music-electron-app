@@ -17,7 +17,8 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
     label: artist.label,
     distributor: artist.distributor,
     social_media_links: artist.social_media_links,
-    biography: artist.biography
+    biography: artist.biography,
+    spotify_claimed_status: artist.spotify_claimed_status
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -139,6 +140,28 @@ const EditArtistModal = ({ artist, onClose, onUpdate }: EditArtistModalProps) =>
                     required
                     className="w-full px-4 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white placeholder-[#B3B3B3] focus:outline-none focus:border-[#1DB954] transition-colors"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#B3B3B3] mb-2">
+                    Spotify Claimed Status
+                  </label>
+                  <select
+                    value={formData.spotify_claimed_status}
+                    onChange={(e) =>
+                      handleInputChange({
+                        target: {
+                          name: 'spotify_claimed_status',
+                          value: e.target.value as 'yes' | 'no' | 'pending'
+                        }
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg bg-[#121212] border border-[#282828] text-white focus:outline-none focus:border-[#1DB954] transition-colors"
+                  >
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="pending">Pending</option>
+                  </select>
                 </div>
               </div>
 

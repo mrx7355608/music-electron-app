@@ -146,6 +146,14 @@ const ArtistDetails = () => {
                     <p className="text-white">{artist.distributor}</p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <Music className="w-5 h-5 text-[#1DB954] mt-0.5" />
+                  <div>
+                    <h3 className="text-sm font-medium text-[#B3B3B3]">Spotify Claimed Status</h3>
+                    <p className="text-white capitalize">{artist.spotify_claimed_status}</p>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -119,7 +119,18 @@ const PlaylistDetails = () => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setSongs(data || [])
+
+      // Get songs that are not in the playlist
+      const { data: playlistTracksData, error: playlistTracksError } = await supabase
+        .from('playlists_tracks')
+        .select('track_id')
+        .eq('playlist_id', id)
+
+      if (playlistTracksError) throw playlistTracksError
+
+      const existingSongIds = playlistTracksData.map((track) => track.track_id)
+      const songsNotInCurrentPlaylist = data.filter((song) => !existingSongIds.includes(song.id))
+      setSongs(songsNotInCurrentPlaylist || [])
     } catch (error) {
       console.error('Error fetching songs:', error)
       setError('Failed to load songs')
